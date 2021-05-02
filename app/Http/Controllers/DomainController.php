@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Product;
+use App\Protype;
 
 class DomainController extends Controller
 {
@@ -14,6 +16,24 @@ class DomainController extends Controller
     public function index($name)
     {
         return view('pages.' . $name);
+    }
+
+    /**
+     * Show the list product
+     */
+
+    public function showProduct(){
+        $product = Product::where('id','<',30)->take(25)->get();
+        $protype = Protype::where('type_id','<',10)->take(5)->get();
+        $productLastList1 = Product::where('id','<',30)->orderby('id', 'desc')->limit(3)->get();
+        $productLastList2 = Product::where('id','<',30)->orderby('id', 'desc')->skip(3)->take(3)->get();
+        $data = [];
+        $data['product'] = $product;
+        $data['protype'] = $protype;
+
+        $data['proLast1'] = $productLastList1;
+        $data['proLast2'] = $productLastList2;
+        return view('.pages/home',['data'=>$data]);
     }
 
     /**
