@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th1 07, 2021 lúc 05:33 PM
--- Phiên bản máy phục vụ: 10.4.10-MariaDB
--- Phiên bản PHP: 7.3.12
+-- Thời gian đã tạo: Th5 03, 2021 lúc 08:26 PM
+-- Phiên bản máy phục vụ: 5.7.31
+-- Phiên bản PHP: 7.3.21
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -21,8 +20,22 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `oganishop`
 --
-CREATE DATABASE IF NOT EXISTS `oganishop` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `oganishop`;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chitietdonhang`
+--
+
+DROP TABLE IF EXISTS `chitietdonhang`;
+CREATE TABLE IF NOT EXISTS `chitietdonhang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `idDonHang` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idSP` int(11) NOT NULL,
+  `SoLuong` int(11) NOT NULL,
+  `thanhtien` decimal(10,0) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -36,28 +49,26 @@ CREATE TABLE IF NOT EXISTS `comment` (
   `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `idSP` int(11) NOT NULL,
   `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `listorder`
+-- Cấu trúc bảng cho bảng `donhang`
 --
 
-DROP TABLE IF EXISTS `listorder`;
-CREATE TABLE IF NOT EXISTS `listorder` (
+DROP TABLE IF EXISTS `donhang`;
+CREATE TABLE IF NOT EXISTS `donhang` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idDonHang` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idDonHang` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `idTTNH` int(11) NOT NULL,
   `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idSP` int(11) NOT NULL,
-  `soluong` int(11) NOT NULL,
   `tongtien` decimal(10,0) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -76,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `type_id` int(11) NOT NULL,
   `weight` float NOT NULL,
   `feature` tinyint(4) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -170,9 +181,9 @@ CREATE TABLE IF NOT EXISTS `thongtinnhanhang` (
   `diachi` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `sdt` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ghichu` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ghichu` text COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -187,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -196,11 +207,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 INSERT INTO `user` (`id`, `username`, `password`, `email`, `role_id`, `created_at`) VALUES
-(1, 'leanhvu', 'e10adc3949ba59abbe56e057f20f883e', '', 1, '2020-12-31 03:54:52'),
-(2, 'quachtranthanhtuyen', 'e10adc3949ba59abbe56e057f20f883e', '', 1, '2020-12-31 03:55:00'),
-(20, 'user1', 'e10adc3949ba59abbe56e057f20f883e', 'user1@gmail.com', 2, '2020-12-31 03:57:10'),
-(21, 'chunchun19', 'e807f1fcf82d132f9bb018ca6738a19f', 'a@gmail.com', 2, '2021-01-07 07:49:41'),
-(22, 'leanhvu1412', 'e10adc3949ba59abbe56e057f20f883e', 'leanhvu1412@gmail.com', 2, '2021-01-07 16:40:06');
+(2, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', 1, '2020-12-31 03:55:00'),
+(20, 'user1', 'e10adc3949ba59abbe56e057f20f883e', 'user1@gmail.com', 2, '2020-12-31 03:57:10');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

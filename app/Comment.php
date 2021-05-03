@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Comment extends Model
 {
     public $timestamps = true;
     protected $primaryKey = 'id';
-    protected $table = 'products';
+    protected $table = 'comment';
     public $incrementing = true;
 }

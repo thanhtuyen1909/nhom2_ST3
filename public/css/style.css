@@ -31,13 +31,30 @@
 /*----------------------------------------*/
 
 
+/* Banner
+/*----------------------------------------*/
+
+.banner__pic img {
+    width: 600px;
+    height: 300px;
+}
+
+
+/*----------------------------------------*/
+
+
 /* Template default CSS
 /*----------------------------------------*/
 
+
+/* my font */
+
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital@1&display=swap');
 html,
 body {
     height: 100%;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     -webkit-font-smoothing: antialiased;
     font-smoothing: antialiased;
 }
@@ -50,8 +67,8 @@ h5,
 h6 {
     margin: 0;
     color: #111111;
-    font-weight: 400;
-    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
 }
 
 h1 {
@@ -80,7 +97,7 @@ h6 {
 
 p {
     font-size: 16px;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     color: #6f6f6f;
     font-weight: 400;
     line-height: 26px;
@@ -147,7 +164,7 @@ ol {
 
 .spad {
     padding-top: 100px;
-    padding-bottom: 100px;
+    padding-bottom: 30px;
 }
 
 .text-white h1,
@@ -592,7 +609,7 @@ ol {
 }
 
 .hero.hero-normal .hero__search {
-    margin-bottom: 30px;
+    margin-bottom: 0;
 }
 
 .hero__categories__all {
@@ -619,7 +636,7 @@ ol {
     right: 18px;
     top: 9px;
     content: "3";
-    font-family: "ElegantIcons";
+    font-family: 'Quicksand';
     font-size: 18px;
     color: #ffffff;
 }
@@ -833,6 +850,7 @@ ol {
 
 .featured__controls ul li {
     list-style: none;
+    font-weight: bold;
     font-size: 18px;
     color: #1c1c1c;
     display: inline-block;
@@ -1025,7 +1043,7 @@ ol {
 .latest-product__item__text span {
     font-size: 18px;
     display: block;
-    color: #252525;
+    color: #628233;
     font-weight: 700;
 }
 
@@ -1075,7 +1093,7 @@ ol {
 
 .breadcrumb__option a:after {
     position: absolute;
-    right: -12px;
+    right: -17px;
     top: 13px;
     height: 1px;
     width: 10px;
@@ -1399,7 +1417,7 @@ ol {
 
 .product__discount__item__text .product__item__price {
     font-size: 18px;
-    color: #1c1c1c;
+    color: #628233;
     font-weight: 700;
 }
 
@@ -1631,44 +1649,69 @@ ol {
 }
 
 .product__item__text h5 {
-    color: #252525;
+    color: #628233;
     font-weight: 700;
 }
 
-.product__pagination,
-.blog__pagination {
-    padding-top: 10px;
+
+/*---------------------
+  Pagination
+-----------------------*/
+
+.pagination {
+    margin-bottom: 25px;
+    margin-top: 0;
+    padding-left: 15px;
 }
 
-.product__pagination a,
-.blog__pagination a {
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    border: 1px solid #b2b2b2;
-    font-size: 14px;
-    color: #b2b2b2;
-    font-weight: 700;
-    line-height: 28px;
-    text-align: center;
-    margin-right: 16px;
-    -webkit-transition: all, 0.3s;
-    -moz-transition: all, 0.3s;
-    -ms-transition: all, 0.3s;
-    -o-transition: all, 0.3s;
-    transition: all, 0.3s;
+.pagination li:first-child a,
+.pagination li:first-child span {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    margin-left: 0;
 }
 
-.product__pagination a:hover,
-.blog__pagination a:hover {
+.pagination li:last-child a,
+.pagination li:last-child span {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.pagination .active a,
+.pagination .active span,
+.pagination .active a:hover,
+.pagination .active span:hover,
+.pagination .active a:focus,
+.pagination .active span:focus {
+    background-color: #FE980F;
+    border-color: #FE980F;
+    color: #FFFFFF;
+    cursor: default;
+    z-index: 2;
+}
+
+.pagination li a,
+.pagination li span {
+    background-color: #f0f0e9;
+    border: 0;
+    float: left;
+    line-height: 1.42857;
+    margin-left: -1px;
+    padding: 6px 12px;
+    position: relative;
+    text-decoration: none;
+    margin-right: 15px;
+    color: #000;
+}
+
+.pagination li a:hover {
     background: #7fad39;
-    border-color: #7fad39;
-    color: #ffffff;
+    color: #fff;
 }
 
-.product__pagination a:last-child,
-.blog__pagination a:last-child {
-    margin-right: 0;
+.pagination li a.active {
+    background: #7fad39;
+    color: #fff;
 }
 
 
@@ -1815,7 +1858,7 @@ ol {
 }
 
 .product__details__tab {
-    padding-top: 85px;
+    padding-top: 40px;
 }
 
 .product__details__tab .nav-tabs {
@@ -1883,6 +1926,7 @@ ol {
 -----------------------*/
 
 .related-product {
+    padding-top: 40px;
     padding-bottom: 30px;
 }
 
@@ -1963,7 +2007,7 @@ ol {
     text-align: right;
 }
 
-.shoping__cart__table table tbody tr td.shoping__cart__item__close span {
+.shoping__cart__table table tbody tr td.shoping__cart__item__close a {
     font-size: 24px;
     color: #b2b2b2;
     cursor: pointer;
@@ -3508,9 +3552,11 @@ ol {
 }
 
 .btnMore {
-    padding: 15px 25px;
+    padding: 10px 30px;
     border: 2px solid #7fad39;
     background-color: #fff;
     color: #7fad39;
     font-weight: bold;
+    margin: auto;
+    display: block;
 }

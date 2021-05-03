@@ -4,10 +4,10 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Protype extends Model
+class Comment extends Model
 {
     public $timestamps = false;
-    protected $primaryKey = 'type_id';
-    protected $table = 'protypes';
+    protected $primaryKey = 'role_id';
+    protected $table = 'roles';
     public $incrementing = true;
 }

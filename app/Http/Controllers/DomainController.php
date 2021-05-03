@@ -19,7 +19,7 @@ class DomainController extends Controller
     }
 
     /**
-     * Show the list product
+     * Show the list product and protype
      */
 
     public function showProduct(){

@@ -1,4 +1,4 @@
-@extends('master.layout')
+﻿@extends('master.layout')
 
 @section('banner')
 <div class="hero__item set-bg" data-setbg="img/hero/banner.jpg">
@@ -155,7 +155,7 @@
             @endforeach
         </div>
 
-        <button class="btnMore" onclick="myFunction()">XEM THÊM</button>
+        <button class="btnMore" onclick="myFunction()" id="namebtn">XEM THÊM</button>
 
     </div>
 </section>
@@ -293,8 +293,10 @@
         var x = document.getElementById('product');
         if (x.style.display === 'none') {
             x.style.display = 'flex';
+            document.getElementById('namebtn').innerHTML = "THU GỌN"
         } else {
             x.style.display = 'none';
+            document.getElementById('namebtn').innerHTML = "XEM THÊM"
         }
     }
 </script>
