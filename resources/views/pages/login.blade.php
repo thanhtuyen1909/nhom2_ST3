@@ -14,7 +14,7 @@
         </div>
         <button class="form__button" type="submit" name="submit">Continue</button>
         <p class="form__text">
-            Bạn chưa có tài khoản? <a class="form__link" href="#" id="linkCreateAccount">Tạo tài khoản</a>
+            Bạn chưa có tài khoản? <a class="form__link" href="{{url('/register')}}" id="linkCreateAccount">Tạo tài khoản</a>
         </p>
     </form>
 </div>
