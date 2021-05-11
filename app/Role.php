@@ -10,4 +10,7 @@ class Comment extends Model
     protected $primaryKey = 'role_id';
     protected $table = 'roles';
     public $incrementing = true;
+    public function linkUser(){
+        return $this->hasMany('App\User','role_id','id');
+    }
 }

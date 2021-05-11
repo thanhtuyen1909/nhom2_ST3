@@ -36,4 +36,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function linkComment(){
+        return $this->hasMany('App\Comment','username','id');
+    }
+    public function linkProtype(){
+        return $this->belongsTo('App\Role','type_id');
+    }
+    public function linkTTNH(){
+        return $this->hasMany('App\ThongTinNhanHang','username','id');
+    }
 }

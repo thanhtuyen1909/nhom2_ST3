@@ -10,4 +10,7 @@ class Protype extends Model
     protected $primaryKey = 'type_id';
     protected $table = 'protypes';
     public $incrementing = true;
+    public function linkProduct(){
+        return $this->hasMany('App\Product','type_id','type_id');
+    }
 }

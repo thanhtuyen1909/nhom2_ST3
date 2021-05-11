@@ -15,11 +15,21 @@ class DomainController extends Controller
      */
     public function index($name)
     {
-        return view('pages.' . $name);
+        $product = Product::where('id','<',30)->take(25)->get();
+        $protype = Protype::where('type_id','<',10)->take(5)->get();
+        $productLastList1 = Product::where('id','<',30)->orderby('id', 'desc')->limit(3)->get();
+        $productLastList2 = Product::where('id','<',30)->orderby('id', 'desc')->skip(3)->take(3)->get();
+        $data = [];
+        $data['product'] = $product;
+        $data['protype'] = $protype;
+
+        $data['proLast1'] = $productLastList1;
+        $data['proLast2'] = $productLastList2;
+        return view('pages.' . $name, ['data'=>$data]);
     }
 
     /**
-     * Show the list product and protype
+     * Show the list product and protype at pages.home
      */
 
     public function showProduct(){

@@ -10,4 +10,7 @@ class Comment extends Model
     protected $primaryKey = 'id';
     protected $table = 'thongtinnhanhang';
     public $incrementing = true;
+    public function linkProtype(){
+        return $this->belongsTo('App\User','username','id');
+    }
 }

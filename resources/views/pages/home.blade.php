@@ -20,7 +20,7 @@
                 @foreach($data['protype'] as $value)
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="img/image_sql/categories/<?= $value['type_img'] ?>">
-                        <h5><a href="#">Fresh Fruit</a></h5>
+                        <h5><a href="#"><?= $value['type_name'] ?></a></h5>
                     </div>
                 </div>
                 @endforeach
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2>Featured Product</h2>
+                    <h2>Sản phẩm nổi bật</h2>
                 </div>
                 <div class="featured__controls">
                     <ul>
@@ -111,9 +111,7 @@
             </div>
             @endif
             @endforeach
-        </div>
 
-        <div class="row featured__filter" id="product">
             @foreach($data['product'] as $value)
             @if($value['type_id'] == 1 && $value['feature'] == 1)
             <div class="col-lg-3 col-md-3 col-sm-6 mix fresh-meat">
@@ -153,9 +151,8 @@
             </div>
             @endif
             @endforeach
+            
         </div>
-
-        <button class="btnMore" onclick="myFunction()" id="namebtn">XEM THÊM</button>
 
     </div>
 </section>
@@ -287,16 +284,3 @@
 </section>
 <!-- Latest Product Section End -->
 @endsection
-
-<script type="text/javascript">
-    function myFunction() {
-        var x = document.getElementById('product');
-        if (x.style.display === 'none') {
-            x.style.display = 'flex';
-            document.getElementById('namebtn').innerHTML = "THU GỌN"
-        } else {
-            x.style.display = 'none';
-            document.getElementById('namebtn').innerHTML = "XEM THÊM"
-        }
-    }
-</script>

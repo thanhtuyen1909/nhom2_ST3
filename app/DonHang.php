@@ -10,4 +10,7 @@ class Product extends Model
     protected $primaryKey = 'id';
     protected $table = 'donhang';
     public $incrementing = true;
+    public function linkCTDH(){
+        return $this->hasMany('App\ChiTietDonHang','idDonHang','id');
+    }
 }
