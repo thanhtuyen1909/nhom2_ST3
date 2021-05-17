@@ -60,11 +60,11 @@
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
                             <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $value['id'] ?>)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="#"><?= $value['name'] ?></a></h6>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
                         <h5><?= number_format($value['price']) ?> VND</h5>
                     </div>
                 </div>
@@ -80,11 +80,11 @@
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
                             <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $value['id'] ?>)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="#"><?= $value['name'] ?></a></h6>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
                         <h5><?= number_format($value['price']) ?> VND</h5>
                     </div>
                 </div>
@@ -96,15 +96,15 @@
             @if($value['type_id'] == 3 && $value['feature'] == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix traicayvahat">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
                             <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="#"><?= $value['name'] ?></a></h6>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
                         <h5><?= number_format($value['price']) ?> VND</h5>
                     </div>
                 </div>
@@ -116,15 +116,15 @@
             @if($value['type_id'] == 1 && $value['feature'] == 1)
             <div class="col-lg-3 col-md-3 col-sm-6 mix fresh-meat">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
                             <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="#"><?= $value['name'] ?></a></h6>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
                         <h5><?= number_format($value['price']) ?> VND</h5>
                     </div>
                 </div>
@@ -136,22 +136,22 @@
             @if($value['type_id'] == 2 && $value['feature'] == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix raucu">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
                         <ul class="featured__item__pic__hover">
                             <li><a href="#"><i class="fa fa-heart"></i></a></li>
                             <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="#"><?= $value['name'] ?></a></h6>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
                         <h5><?= number_format($value['price']) ?> VND</h5>
                     </div>
                 </div>
             </div>
             @endif
             @endforeach
-            
+
         </div>
 
     </div>
@@ -187,7 +187,7 @@
                     <div class="latest-product__slider owl-carousel">
                         <div class="latest-prdouct__slider__item">
                             @foreach($data['proLast1'] as $value)
-                            <a href="#" class="latest-product__item">
+                            <a href="{{URL::to('/')}}/shop-details/{{$value->id}}" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/image_sql/products/<?= $value['image']; ?>" class="rounded-circle" style="width: 150px;" alt="">
                                 </div>
@@ -200,7 +200,7 @@
                         </div>
                         <div class="latest-prdouct__slider__item">
                             @foreach($data['proLast2'] as $value)
-                            <a href="#" class="latest-product__item">
+                            <a href="{{URL::to('/')}}/shop-details/{{$value->id}}" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/image_sql/products/<?= $value['image']; ?>" class="rounded-circle" style="width: 150px;" alt="">
                                 </div>
@@ -281,6 +281,7 @@
             </div>
         </div>
     </div>
+
 </section>
 <!-- Latest Product Section End -->
 @endsection

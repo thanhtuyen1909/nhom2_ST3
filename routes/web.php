@@ -14,5 +14,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'DomainController@showProduct');
-
+Route::get('/AddCart/{id}', 'CartController@AddCart');
+Route::get('/Delete/{id}','CartController@DeleteItemCart');
+Route::get('/DeleteItemCart/{id}','CartController@DeleteItemListCart');
+Route::get('/UpdateCart/{id}/{quantity}','CartController@UpdateCart');
 Route::get('/{name?}', 'DomainController@index');
+Route::get('/shop-details/{id}', 'DomainController@show');
+
+Route::get('/admin/{name?}', 'DomainController@indexAdmin');
+Route::get('/', function(){return view('admin.pages.home');});
