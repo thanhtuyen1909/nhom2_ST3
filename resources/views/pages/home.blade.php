@@ -19,8 +19,8 @@
             <div class="categories__slider owl-carousel">
                 @foreach($data['protype'] as $value)
                 <div class="col-lg-3">
-                    <div class="categories__item set-bg" data-setbg="img/image_sql/categories/<?= $value['type_img'] ?>">
-                        <h5><a href="#"><?= $value['type_name'] ?></a></h5>
+                    <div class="categories__item set-bg" data-setbg="img/image_sql/categories/<?= $value->type_img ?>">
+                        <h5><a href="javascript:"><?= $value->type_name ?></a></h5>
                     </div>
                 </div>
                 @endforeach
@@ -53,19 +53,37 @@
 
         <div class="row featured__filter">
             @foreach($data['product'] as $value)
-            @if($value['type_id'] == 4 && $value['feature'] == 1)
+            @if($value->type_id == 4 && $value->feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix haisan">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
                         <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a onclick="AddCart(<?= $value['id'] ?>)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
-                        <h5><?= number_format($value['price']) ?> VND</h5>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
+                        <h5><?= number_format($value->price) ?> VND</h5>
                     </div>
                 </div>
             </div>
@@ -73,19 +91,37 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value['type_id'] == 5 && $value['feature'] == 1)
+            @if($value->type_id == 5 && $value->feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix bovatrung">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
                         <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a onclick="AddCart(<?= $value['id'] ?>)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                        <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
-                        <h5><?= number_format($value['price']) ?> VND</h5>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
+                        <h5><?= number_format($value->price) ?> VND</h5>
                     </div>
                 </div>
             </div>
@@ -93,19 +129,37 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value['type_id'] == 3 && $value['feature'] == 1)
+            @if($value->type_id == 3 && $value->feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix traicayvahat">
                 <div class="featured__item">
-                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
                         <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
+                        <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
-                        <h5><?= number_format($value['price']) ?> VND</h5>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
+                        <h5><?= number_format($value->price) ?> VND</h5>
                     </div>
                 </div>
             </div>
@@ -113,19 +167,37 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value['type_id'] == 1 && $value['feature'] == 1)
+            @if($value->type_id == 1 && $value->feature == 1)
             <div class="col-lg-3 col-md-3 col-sm-6 mix fresh-meat">
                 <div class="featured__item">
-                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
-                        <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
+                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                    <ul class="featured__item__pic__hover">
+                    <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
-                        <h5><?= number_format($value['price']) ?> VND</h5>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
+                        <h5><?= number_format($value->price) ?> VND</h5>
                     </div>
                 </div>
             </div>
@@ -133,19 +205,37 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value['type_id'] == 2 && $value['feature'] == 1)
+            @if($value->type_id == 2 && $value->feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix raucu">
                 <div class="featured__item">
-                <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value['image'] ?>">
+                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
                         <ul class="featured__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a onclick="AddCart(<?= $value['id']?>)" href="javascript:" ><i class="fa fa-shopping-cart"></i></a></li>
+                        <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="featured__item__text">
-                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value['name'] ?></a></h6>
-                        <h5><?= number_format($value['price']) ?> VND</h5>
+                        <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
+                        <h5><?= number_format($value->price) ?> VND</h5>
                     </div>
                 </div>
             </div>
@@ -189,11 +279,11 @@
                             @foreach($data['proLast1'] as $value)
                             <a href="{{URL::to('/')}}/shop-details/{{$value->id}}" class="latest-product__item">
                                 <div class="latest-product__item__pic">
-                                    <img src="img/image_sql/products/<?= $value['image']; ?>" class="rounded-circle" style="width: 150px;" alt="">
+                                    <img src="img/image_sql/products/<?= $value->filename; ?>" class="rounded-circle" style="width: 150px;" alt="">
                                 </div>
                                 <div class="latest-product__item__text">
-                                    <h6><?= $value['name'] ?></h6>
-                                    <span><?= number_format($value['price']) ?> VND</span>
+                                    <h6><?= $value->name ?></h6>
+                                    <span><?= number_format($value->price) ?> VND</span>
                                 </div>
                             </a>
                             @endforeach
@@ -202,11 +292,11 @@
                             @foreach($data['proLast2'] as $value)
                             <a href="{{URL::to('/')}}/shop-details/{{$value->id}}" class="latest-product__item">
                                 <div class="latest-product__item__pic">
-                                    <img src="img/image_sql/products/<?= $value['image']; ?>" class="rounded-circle" style="width: 150px;" alt="">
+                                    <img src="img/image_sql/products/<?= $value->filename; ?>" class="rounded-circle" style="width: 150px;" alt="">
                                 </div>
                                 <div class="latest-product__item__text">
-                                    <h6><?= $value['name'] ?></h6>
-                                    <span><?= number_format($value['price']) ?> VND</span>
+                                    <h6><?= $value->name ?></h6>
+                                    <span><?= number_format($value->price) ?> VND</span>
                                 </div>
                             </a>
                             @endforeach
@@ -219,7 +309,7 @@
                     <h4>Top Rated Products</h4>
                     <div class="latest-product__slider owl-carousel">
                         <div class="latest-prdouct__slider__item">
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-1.jpg" alt="">
                                 </div>
@@ -228,7 +318,7 @@
                                     <span>$30.00</span>
                                 </div>
                             </a>
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-2.jpg" alt="">
                                 </div>
@@ -237,7 +327,7 @@
                                     <span>$30.00</span>
                                 </div>
                             </a>
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-3.jpg" alt="">
                                 </div>
@@ -248,7 +338,7 @@
                             </a>
                         </div>
                         <div class="latest-prdouct__slider__item">
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-1.jpg" alt="">
                                 </div>
@@ -257,7 +347,7 @@
                                     <span>$30.00</span>
                                 </div>
                             </a>
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-2.jpg" alt="">
                                 </div>
@@ -266,7 +356,7 @@
                                     <span>$30.00</span>
                                 </div>
                             </a>
-                            <a href="#" class="latest-product__item">
+                            <a href="javascript:" class="latest-product__item">
                                 <div class="latest-product__item__pic">
                                     <img src="img/latest-product/lp-3.jpg" alt="">
                                 </div>

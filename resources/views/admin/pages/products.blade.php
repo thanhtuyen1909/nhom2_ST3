@@ -1,265 +1,87 @@
-@extends('admin.master.layout')
+﻿@extends('admin.master.layout')
 @section('content')
 <div class="container mt-5">
+  @if(session()->has('success'))
+  <div class="alert alert-success alert-posifixed">
+    {{ session()->get('success') }}
+  </div>
+  @endif
   <div class="row tm-content-row">
     <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
+
       <div class="tm-bg-primary-dark tm-block tm-block-products">
+        <h2 class="tm-block-title">Sản phẩm</h2>
         <div class="tm-product-table-container">
           <table class="table table-hover tm-table-small tm-product-table">
             <thead>
               <tr>
                 <th scope="col">&nbsp;</th>
-                <th scope="col">PRODUCT NAME</th>
-                <th scope="col">UNIT SOLD</th>
-                <th scope="col">IN STOCK</th>
-                <th scope="col">EXPIRE DATE</th>
+                <th scope="col">&nbsp;</th>
+                <th scope="col">TÊN SẢN PHẨM</th>
+                <th scope="col">GIÁ</th>
+                <th scope="col">LOẠI SẢN PHẨM</th>
+                <th scope="col">SỐ LƯỢNG</th>
                 <th scope="col">&nbsp;</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="product-body">
+              @foreach($product as $item)
+              <?php $check = true ?>
               <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 1</td>
-                <td>1,450</td>
-                <td>550</td>
-                <td>28 March 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
+                <th scope="row" style="padding-top: 50px;"><input type="checkbox" /></th>
+                @foreach($photos as $photo)
+                @if($photo->product_id == $item->id && $photo->photo_feature == 1)
+                <?php $check = false ?>
+                <td class="product-img"><img src="{{URL::to('/')}}/img/image_sql/products/{{$photo->filename}}" alt="" style="width: 100px; height: 100px;"></td>
+                @endif
+                @endforeach
+                @if($check == true)
+                <td class="product-img"><img src="" alt="" style="width: 100px; height: 100px;"></td>
+                @endif
+                <td class="tm-product-name" data-id="{{$item->id}}" style="padding-top: 50px;">{{$item->name}}</td>
+                <td style="padding-top: 50px;">{{number_format($item->price)}}</td>
+                <td style="padding-top: 50px;">{{$item->type_name}}</td>
+                <td style="padding-top: 50px;">{{$item->amount}}</td>
+                <td style="padding-top: 40px;">
+                  <a onclick="deleteProduct(<?= $item->id ?>)" href="javascript:" class="tm-product-delete-link">
                     <i class="far fa-trash-alt tm-product-delete-icon"></i>
                   </a>
                 </td>
               </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 2</td>
-                <td>1,250</td>
-                <td>750</td>
-                <td>21 March 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 3</td>
-                <td>1,100</td>
-                <td>900</td>
-                <td>18 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 4</td>
-                <td>1,400</td>
-                <td>600</td>
-                <td>24 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 5</td>
-                <td>1,800</td>
-                <td>200</td>
-                <td>22 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 6</td>
-                <td>1,000</td>
-                <td>1,000</td>
-                <td>20 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 7</td>
-                <td>500</td>
-                <td>100</td>
-                <td>10 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 8</td>
-                <td>1,000</td>
-                <td>600</td>
-                <td>08 Feb 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 9</td>
-                <td>1,200</td>
-                <td>800</td>
-                <td>24 Jan 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 10</td>
-                <td>1,600</td>
-                <td>400</td>
-                <td>22 Jan 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row"><input type="checkbox" /></th>
-                <td class="tm-product-name">Lorem Ipsum Product 11</td>
-                <td>2,000</td>
-                <td>400</td>
-                <td>21 Jan 2019</td>
-                <td>
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
+              @endforeach
             </tbody>
           </table>
         </div>
         <!-- table container -->
-        <a href="{{ url('/admin/add-product') }}" class="btn btn-primary btn-block text-uppercase mb-3">Add new product</a>
+        <a href="{{ url('/admin/add-product') }}" class="btn btn-primary btn-block text-uppercase mb-3">Thêm sản phẩm</a>
         <button class="btn btn-primary btn-block text-uppercase">
-          Delete selected products
+          Xoá sản phẩm được chọn
         </button>
       </div>
     </div>
     <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4 tm-block-col">
       <div class="tm-bg-primary-dark tm-block tm-block-product-categories">
-        <h2 class="tm-block-title">Product Categories</h2>
+        <h2 class="tm-block-title">Loại sản phẩm</h2>
         <div class="tm-product-table-container">
           <table class="table tm-table-small tm-product-table">
-            <tbody>
+            <tbody id="protype-body">
+              @foreach($data['protype'] as $item)
               <tr>
-                <td class="tm-product-name">Product Category 1</td>
+                <td style="padding-top: 20px;" class="tm-product-name" data-id="{{$item->type_id}}">{{$item->type_name}}</td>
                 <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
+                  <a onclick="deleteProtype(<?= $item->type_id ?>)" href="javascript:" class="tm-product-delete-link">
                     <i class="far fa-trash-alt tm-product-delete-icon"></i>
                   </a>
                 </td>
               </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 2</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 3</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 4</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 5</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 6</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 7</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 8</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 9</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 10</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="tm-product-name">Product Category 11</td>
-                <td class="text-center">
-                  <a href="#" class="tm-product-delete-link">
-                    <i class="far fa-trash-alt tm-product-delete-icon"></i>
-                  </a>
-                </td>
-              </tr>
+              @endforeach
             </tbody>
           </table>
         </div>
         <!-- table container -->
-        <button class="btn btn-primary btn-block text-uppercase mb-3">
-          Add new category
-        </button>
+        <a href="{{ url('/admin/add-protype') }}" class="btn btn-primary btn-block text-uppercase mb-3">
+          Thêm loại sản phẩm
+        </a>
       </div>
     </div>
   </div>

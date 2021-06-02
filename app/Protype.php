@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Protype extends Model
 {
+    protected $fillable = ['type_id', 'type_name', 'type_img'];
     public $timestamps = false;
     protected $primaryKey = 'type_id';
     protected $table = 'protypes';

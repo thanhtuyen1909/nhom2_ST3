@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Cart;
+use App\Cart_model;
+use App\CartInfo;
+use App\Favourite;
+use App\FavouriteInfo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Product;
 use App\Protype;
+use App\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Session\Session;
 
 class DomainController extends Controller
@@ -15,48 +20,214 @@ class DomainController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($name)
+    public function logout(Request $request)
     {
-        $product = Product::where('id', '<', 30)->take(25)->get();
-        $protype = Protype::where('type_id', '<', 10)->take(5)->get();
-        $productLastList1 = Product::where('id', '<', 30)->orderby('id', 'desc')->limit(3)->get();
-        $productLastList2 = Product::where('id', '<', 30)->orderby('id', 'desc')->skip(3)->take(3)->get();
+        $request->session()->forget('Cart');
+        $request->session()->forget('Login');
+        $request->session()->forget('Favourite');
+        Auth::logout();
+
+        return redirect('/home');
+    }
+
+    public function getData()
+    {
+        $saleProduct = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+        ->where('products_photos.photo_feature', '=', 1)
+        ->get();
+
+        $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->get();
+        $protype = DB::table('protypes')->get();
+        $productLastList1 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->limit(3)->get();
+        $productLastList2 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->skip(3)->take(3)->get();
+        
+        $product1 = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->where('products_photos.photo_feature', '=', 1)
+        ->get();
+
         $data = [];
         $data['product'] = $product;
+
+        $data['product1'] = $product1;
+
         $data['protype'] = $protype;
 
         $data['proLast1'] = $productLastList1;
         $data['proLast2'] = $productLastList2;
-        
+        $data['saleProduct'] = $saleProduct;
+
+        return $data;
+    }
+
+    public function getLogin()
+    {
+        return view('auth.login');
+    }
+
+    public function Check(Request $req)
+    {
+        if (Auth::check() == true) {
+            if (Session('Login') == null) {
+                $req->session()->put('Login', Auth::user()->id);
+            }
+            if (Session('Login') != null) {
+                //Tao session favourite
+                $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+
+                if (count($favourite) > 0) {
+                    $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+                    $req->session()->put('Favourite', count($favouriteInfo));
+                } else {
+                    $favourite = new Favourite();
+                    $favourite->idUser = $req->session()->get('Login');
+                    $favourite->save();
+                }
+                //Tao session cart
+                $cart = Cart_model::where('idUser', '=', $req->session()->get('Login'))->get();
+
+                if (count($cart) > 0) {
+                    $cartInfo = CartInfo::where('idCart', '=', $cart[0]->idCart)->get();
+
+                    $product = [];
+                    $totalQuantity = 0;
+                    $totalPrice = 0;
+                    foreach ($cartInfo as $info) {
+                        $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products.id', '=', $info->idProduct)->take(1)->get()[0];
+                        
+                        $subProduct = ['quantity' => $info->quantity, 'price' => $info->quantity * $temp_product->price, 'productInfo' => $temp_product];
+                        $totalQuantity += $subProduct['quantity'];
+                        $totalPrice += $subProduct['price'];
+                        $product[$info->idProduct] = $subProduct;
+                    }
+                    $oldCart = ['product' => $product, 'totalQuantity' => $totalQuantity, 'totalPrice' => $totalPrice];
+                    $oldCart = (object)$oldCart;
+                    $req->session()->put('Cart', $oldCart);
+                } else {
+                    $cart = new Cart_model();
+                    $cart->totalQuantity = 0;
+                    $cart->totalPrice = 0;
+                    $cart->idUser = $req->session()->get('Login');
+                    $cart->save();
+                }
+            }
+        }
+    }
+    public function index(Request $request, $name)
+    {
+        $this->Check($request);
+        $favourite = Favourite::where('idUser', '=', $request->session()->get('Login'))->get();
+        $check = [];
+        $favouriteProduct = [];
+        if (count($favourite) > 0) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
+        }
+        $data = $this->getData();
+        $data['check'] = $check;
+        $data['favourite'] = $favouriteProduct;
+     
         return view('pages.' . $name, ['data' => $data]);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function indexAdmin($name)
+    public function Favourite(Request $req, $id)
     {
-        return view('admin.pages.' . $name);
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite) > 0) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]['id'])->get();
+            $check = true;
+            foreach ($favouriteInfo as $info) {
+                if ($info->idProduct == $id) {
+                    $check = false;
+                }
+            }
+            if ($check == true) {
+                $temp_info = new FavouriteInfo();
+                $temp_info->idProduct = $id;
+                $temp_info->idFavourite = $favourite[0]['id'];
+                $temp_info->save();
+            }
+            return $check;
+        }
+    }
+
+    public function DeleteFavourite(Request $req, $id)
+    {
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]['id'])->get();
+        foreach ($favouriteInfo as $info) {
+            if ($info->idProduct == $id) {
+                FavouriteInfo::destroy($info['id']);
+            }
+        }
+        $check = [];
+        $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]['id'])->get();
+        $favouriteProduct = [];
+        foreach ($favouriteInfo as $info) {
+            $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+
+            array_push($favouriteProduct, $temp_product[0]);
+            $check[$info->idProduct] = $info->idProduct;
+        }
+        $data = [];
+        $data['favourite'] = $favouriteProduct;
+        $data['check'] = $check;
+        return view('.pages/listFavourite', ['data' => $data]);
+    }
+
+    // shop-grid
+    public function Shop(Request $req)
+    {
+        $data = $this->getData();
+
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite)) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+            $check = [];
+            $favouriteProduct = [];
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
+            $data['favourite'] = $favouriteProduct;
+            $data['check'] = $check;
+        }
+
+        return view('.pages/shop-grid', ['data' => $data]);
     }
 
     /**
      * Show the list product and protype at pages.home
      */
 
-    public function showProduct()
+    public function showProduct(Request $req)
     {
-        $product = Product::where('id', '<', 30)->take(25)->get();
-        $protype = Protype::where('type_id', '<', 10)->take(5)->get();
-        $productLastList1 = Product::where('id', '<', 30)->orderby('id', 'desc')->limit(3)->get();
-        $productLastList2 = Product::where('id', '<', 30)->orderby('id', 'desc')->skip(3)->take(3)->get();
-        $data = [];
-        $data['product'] = $product;
-        $data['protype'] = $protype;
-
-        $data['proLast1'] = $productLastList1;
-        $data['proLast2'] = $productLastList2;
+        $data = $this->getData();
+        
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite)) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+            $check = [];
+            $favouriteProduct = [];
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
+            $data['favourite'] = $favouriteProduct;
+            $data['check'] = $check;
+        }  
         return view('pages.home', ['data' => $data]);
     }
 
@@ -91,18 +262,31 @@ class DomainController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id,Request $req)
     {
-        $product = Product::where('id', '=', $id)->select('*')->first();
-        $protype = Protype::where('type_id', '<', 10)->take(5)->get();
-        $productRelate = Product::where('type_id', '=', $product->type_id)->take(5)->get();
-        $protypeProduct = Protype::where('type_id', '=', $product->type_id)->select('*')->first();
+        $data = $this->getData();
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite) > 0) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+            $check = [];
+            $favouriteProduct = [];
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
 
+            $data['favourite'] = $favouriteProduct;
+            $data['check'] = $check;
+        }
+
+        $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $id)->select('*')->get();
+        $productRelate = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products_photos.photo_feature', '=', 1)->where('type_id', '=', $product[0]->type_id)->get();
+        $data['product'] = $product;
         $data['productRelate'] = $productRelate;
-        $data['protype'] = $protype;
 
-
-        return view('pages.shop-details', compact('product', 'protypeProduct'), ['data' => $data]);
+        return view('pages.shop-details', ['data' => $data]);
     }
 
     /**
@@ -137,5 +321,34 @@ class DomainController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Show các product tìm được theo key.
+     */
+    public function getSearch(Request $req)
+    {
+        $key = $req->key;
+        $product = Product::where('name', 'like', '%' . $key . '%')
+            ->orWhere('price', '=', $key)
+            ->get()->toArray();
+
+        $data = $this->getData();
+        $data['product1'] = $product;
+
+        return view('pages.search', ['data' => $data]);
+    }
+
+    /**
+     *  Show loại sản phẩm
+     */
+
+    public function showProtype($id)
+    {
+        $data = $this->getDaTa();
+        $product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products_photos.photo_feature', '=', 1)->where('type_id', '=', $id)->select('*')->get();
+        $protype = Protype::where('type_id', '=', $id)->get();
+        $data['product'] = $product;
+        return view('pages.classifiProduct', compact('protype'), ['data' => $data]);
     }
 }

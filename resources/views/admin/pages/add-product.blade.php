@@ -6,58 +6,92 @@
       <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
         <div class="row">
           <div class="col-12">
-            <h2 class="tm-block-title d-inline-block">Add Product</h2>
+            <h2 class="tm-block-title d-inline-block">Thêm sản phẩm</h2>
           </div>
         </div>
-        <div class="row tm-edit-product-row">
-          <div class="col-xl-6 col-lg-6 col-md-12">
-            <form action="" class="tm-edit-product-form">
+        <form action="{{URL::to('/')}}/admin/add" method="post" class="tm-edit-product-form" enctype="multipart/form-data">
+          @csrf
+          <div class="row tm-edit-product-row">
+            <div class="col-xl-6 col-lg-6 col-md-12">
               <div class="form-group mb-3">
-                <label for="name">Product Name
+                <label for="name">Tên sản phẩm
                 </label>
-                <input id="name" name="name" type="text" class="form-control validate" required />
+                <input id="name" name="name" type="text" value="" class="form-control validate" />
               </div>
               <div class="form-group mb-3">
-                <label for="description">Description</label>
-                <textarea class="form-control validate" rows="3" required></textarea>
+                <label for="description">Mô tả</label>
+                <textarea class="form-control validate tm-small" name="description" rows="4" required></textarea>
               </div>
               <div class="form-group mb-3">
-                <label for="category">Category</label>
-                <select class="custom-select tm-select-accounts" id="category">
-                  <option selected>Select category</option>
-                  <option value="1">New Arrival</option>
-                  <option value="2">Most Popular</option>
-                  <option value="3">Trending</option>
+                <label for="information">Giới thiệu</label>
+                <textarea class="form-control validate tm-small" name="information" rows="4" required></textarea>
+              </div>
+              <div class="form-group mb-3">
+                <label for="type_id">Loại sản phẩm</label>
+                <select class="custom-select tm-select-accounts" id="type_id" name="type_id">
+                  @foreach($data['protype'] as $item)
+                  <option value="{{$item->type_id}}">{{$item->type_name}}</option>
+                  @endforeach
                 </select>
               </div>
               <div class="row">
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
-                  <label for="expire_date">Expire Date
+                  <label for="created_at">Ngày nhập
                   </label>
-                  <input id="expire_date" name="expire_date" type="text" class="form-control validate" data-large-mode="true" />
+                  <input readonly id="created_at" name="created_at" type="text" value="<?= now() ?>" class="form-control validate" data-large-mode="true" />
                 </div>
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
-                  <label for="stock">Units In Stock
+                  <label for="weight">Cân nặng
                   </label>
-                  <input id="stock" name="stock" type="text" class="form-control validate" required />
+                  <input id="weight" name="weight" type="text" value="" class="form-control validate" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                  <label for="feature">Nổi bật</label>
+                  <select class="custom-select tm-select-accounts" id="feature" name="feature">
+                    <option value="1">Nổi bật</option>
+                    <option value="0" selected>Không</option>
+                  </select>
+                </div>
+                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                  <label for="sale">Giảm giá
+                  </label>
+                  <input id="sale" name="sale" type="text" value="" class="form-control validate" />
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                  <label for="amount">Số lượng
+                  </label>
+                  <input id="amount" name="amount" type="text" value="" class="form-control validate" />
+                </div>
+                <div class="form-group mb-3 col-xs-12 col-sm-6">
+                  <label for="price">Giá
+                  </label>
+                  <input id="price" name="price" value="" class="form-control validate" />
                 </div>
               </div>
 
-          </div>
-          <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
-            <div class="tm-product-img-dummy mx-auto">
-              <i class="fas fa-cloud-upload-alt tm-upload-icon" onclick="document.getElementById('fileInput').click();"></i>
             </div>
-            <div class="custom-file mt-3 mb-3">
-              <input id="fileInput" type="file" style="display:none;" />
-              <input type="button" class="btn btn-primary btn-block mx-auto" value="UPLOAD PRODUCT IMAGE" onclick="document.getElementById('fileInput').click();" />
+            <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
+              <div class="tm-product-img-edit mx-auto">
+                <img id="imgUpload" src="" alt="Product image" class="img-fluid d-block mx-auto">
+              </div>
+              <div class="tm-product-img-edit mx-auto">
+                <div class="imgPreview"> </div>
+              </div>
+              <div class="custom-file mt-3 mb-3">
+                <input id="fileInput" name="fileInput" type="file" style="display:none;" onchange="readURL(this);" />
+                <input class="btn btn-primary btn-block mx-auto" value="CHỌN ẢNH ĐẠI DIỆN" onclick="document.getElementById('fileInput').click();" />
+                <input id="images" class="btn btn-primary btn-block mx-auto" value="CHỌN ẢNH" name="imageFile[]" type="file" multiple="multiple" />
+              </div>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary btn-block text-uppercase">THÊM SẢN PHẨM</button>
             </div>
           </div>
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block text-uppercase">Add Product Now</button>
-          </div>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   </div>

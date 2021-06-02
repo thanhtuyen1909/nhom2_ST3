@@ -15,7 +15,7 @@ class Cart{
         }
     }
     
-    public function AddCart($product,$id){
+    public function AddCart($product,$id,$quantity){
         $newProduct = ['quantity'=>0,'price'=>$product->price   ,'productInfo' => $product];
         if($this->product){
             if(array_key_exists($id,$this->product))
@@ -23,11 +23,11 @@ class Cart{
                 $newProduct = $this->product[$id];
             }
         }
-        $newProduct['quantity']++;
-        $newProduct['price'] = $newProduct['quantity'] * $product->price;
+        $newProduct['quantity'] +=$quantity;
+        $newProduct['price'] += $newProduct['quantity'] * $product->price;
         $this->product[$id] = $newProduct;
-        $this->totalPrice += $product->price;
-        $this->totalQuantity++;
+        $this->totalPrice += $product->price *$quantity;
+        $this->totalQuantity+=$quantity;
     }
     public function DeleteItemCart($id){
         $this->totalQuantity -= $this->product[$id]['quantity'];

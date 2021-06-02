@@ -17,59 +17,124 @@
     </div>
   </div>
   <!-- row -->
-  <div class="row tm-content-row">
-    <div class="tm-block-col tm-col-avatar">
-      <div class="tm-bg-primary-dark tm-block tm-block-avatar">
-        <h2 class="tm-block-title">Change Avatar</h2>
-        <div class="tm-avatar-container">
-          <img src="{{URL::to('/')}}/img/avatar.png" alt="Avatar" class="tm-avatar img-fluid mb-4" />
-          <a href="#" class="tm-avatar-delete-link">
-            <i class="far fa-trash-alt tm-product-delete-icon"></i>
-          </a>
+    <div class="row tm-content-row">
+      <div class="col-12 tm-block-col">
+        <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+          <div class="tm-product-table-container">
+            <table class="table table-hover tm-table-small tm-product-table">
+              <thead>
+                <tr>
+                  <th scope="col">&nbsp;</th>
+                  <th scope="col">USERNAME</th>
+                  <th scope="col">EMAIL</th>
+                  <th scope="col">ROLE</th>
+                  <th scope="col">UPDATED AT</th>
+                  <th scope="col">CREATED AT</th>
+                  <th scope="col">&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody id="account-body">
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user1</td>
+                  <td>user1@gmail.com</td>
+                  <td>User</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user1</td>
+                  <td>user1@gmail.com</td>
+                  <td>User</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user1</td>
+                  <td>user1@gmail.com</td>
+                  <td>User</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user1</td>
+                  <td>user1@gmail.com</td>
+                  <td>User</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user2</td>
+                  <td>user2@gmail.com</td>
+                  <td>Admin</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user2</td>
+                  <td>user2@gmail.com</td>
+                  <td>Admin</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row"><input type="checkbox" /></th>
+                  <td class="tm-product-name">user2</td>
+                  <td>user2@gmail.com</td>
+                  <td>Admin</td>
+                  <td>20/05/2021</td>
+                  <td>20/05/2021</td>
+                  <td>
+                    <a href="#" class="tm-product-delete-link">
+                      <i class="far fa-trash-alt tm-product-delete-icon"></i>
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- table container -->
+          <a href="{{ url('/admin/add-account') }}" class="btn btn-primary btn-block text-uppercase mb-3">THÊM TÀI KHOẢN MỚI</a>
+          <button class="btn btn-primary btn-block text-uppercase">
+            XOÁ TÀI KHOẢN ĐƯỢC CHỌN
+          </button>
         </div>
-        <button class="btn btn-primary btn-block text-uppercase">
-          Upload New Photo
-        </button>
       </div>
     </div>
-    <div class="tm-block-col tm-col-account-settings">
-      <div class="tm-bg-primary-dark tm-block tm-block-settings">
-        <h2 class="tm-block-title">Account Settings</h2>
-        <form action="" class="tm-signup-form row">
-          <div class="form-group col-lg-6">
-            <label for="name">Account Name</label>
-            <input id="name" name="name" type="text" class="form-control validate" />
-          </div>
-          <div class="form-group col-lg-6">
-            <label for="email">Account Email</label>
-            <input id="email" name="email" type="email" class="form-control validate" />
-          </div>
-          <div class="form-group col-lg-6">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" class="form-control validate" />
-          </div>
-          <div class="form-group col-lg-6">
-            <label for="password2">Re-enter Password</label>
-            <input id="password2" name="password2" type="password" class="form-control validate" />
-          </div>
-          <div class="form-group col-lg-6">
-            <label for="phone">Phone</label>
-            <input id="phone" name="phone" type="tel" class="form-control validate" />
-          </div>
-          <div class="form-group col-lg-6">
-            <label class="tm-hide-sm">&nbsp;</label>
-            <button type="submit" class="btn btn-primary btn-block text-uppercase">
-              Update Your Profile
-            </button>
-          </div>
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block text-uppercase">
-              Delete Your Account
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
 @endsection

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('img/logo.ico') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" type="text/css">
     <title>Ogani | Template</title>
     <style>
         .shoping__cart__item img {
@@ -71,9 +72,21 @@
             </ul>
         </div>
         <div class="humberger__menu__widget">
+            @if(Auth::check()==false)
             <div class="header__top__right__auth">
-                <a href="./login"><i class="fa fa-user"></i>Đăng nhập</a>
+                <a href="{{url('login')}}"><i class="fa fa-user"></i> Login</a>
             </div>
+            @else
+            <div class="header__top__right__auth">
+                <div class="header__top__right__language">
+                    <div><i class="fa fa-user"> {{Auth::user()->name}}</i></div>
+                    <ul>
+                        <li><a href="{{url('setting')}}">Setting</a></li>
+                        <li><a href="{{url('logout')}}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+            @endif
         </div>
         <nav class="humberger__menu__nav mobile-menu" id="myDIV">
             <ul>
@@ -81,7 +94,6 @@
                 <li><a href="{{ url('/shop-grid') }}">Cửa hàng</a></li>
                 <li><a href="#">Trang</a>
                     <ul class="header__menu__dropdown">
-                        <li><a href="{{ url('/shop-details/1') }}">Chi tiết</a></li>
                         <li><a href="{{ url('/shoping-cart') }}">Giỏ hàng</a></li>
                         <li><a href="{{ url('/checkout') }}">Thanh toán</a></li>
                     </ul>
@@ -96,6 +108,7 @@
             <a href="#"><i class="fa fa-linkedin"></i></a>
             <a href="#"><i class="fa fa-pinterest-p"></i></a>
         </div>
+
         <div class="humberger__menu__contact">
             <ul>
                 <li><i class="fa fa-envelope"></i> nhom2_ST3@gmail.com</li>
@@ -126,9 +139,23 @@
                                 <a href="#"><i class="fa fa-linkedin"></i></a>
                                 <a href="#"><i class="fa fa-pinterest-p"></i></a>
                             </div>
+
+                            @if(Auth::check()==false)
                             <div class="header__top__right__auth">
-                                <a href="./login"><i class="fa fa-user"></i>Đăng nhập</a>
+                                <a href="{{url('login')}}"><i class="fa fa-user"></i> Login</a>
                             </div>
+                            @else
+                            <div class="header__top__right__auth">
+                                <div class="header__top__right__language">
+                                    <div><i class="fa fa-user"> {{Auth::user()->name}}</i></div>
+                                    <ul>
+                                        <li><a href="{{url('setting')}}">Setting</a></li>
+                                        <li><a href="{{url('logout')}}">Logout</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
@@ -148,7 +175,6 @@
                             <li id="shop-grid"><a href="{{ url('/shop-grid') }}">Cửa hàng</a></li>
                             <li id="page"><a href="#">Trang</a>
                                 <ul class="header__menu__dropdown">
-                                    <li id="shop-details"><a href="{{ url('/shop-details/1') }}">Chi tiết</a></li>
                                     <li id="shoping-cart"><a href="{{ url('/shoping-cart') }}">Giỏ hàng</a></li>
                                     <li id="checkout"><a href="{{ url('/checkout') }}">Thanh toán</a></li>
                                 </ul>
@@ -160,8 +186,12 @@
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
-                            <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                            <li class="cart-icon"><a href=""> <a href="{{ url('/shoping-cart') }}"><i class="fa fa-shopping-bag"></i></a>
+                            @if(Session::has("Favourite") != null)
+                            <li><a href="{{ url('/favourite') }}"><i class="fa fa-heart"></i> <span id="favourite-quantity">{{Session::get('Favourite')}}</span></a></li>
+                            @else
+                            <li><a href="{{ url('/favourite') }}"><i class="fa fa-heart"></i> <span id="favourite-quantity">0</span></a></li>
+                            @endif
+                            <li class="cart-icon"><a href="{{ url('/shoping-cart') }}"><i class="fa fa-shopping-bag"></i>
                                     @if(Session::has("Cart") != null)
                                     <span id="total-quantity">{{Session::get("Cart")->totalQuantity}}</span>
                                     @else
@@ -176,7 +206,7 @@
                                                 <tbody>
                                                     @foreach(Session::get("Cart")->product as $item)
                                                     <tr>
-                                                        <td class="si-pic"><img class="img-cart" src="{{URL::to('/')}}/img/image_sql/products/<?= $item['productInfo']->image ?>" alt=""></td>
+                                                        <td class="si-pic"><img class="img-cart" src="{{URL::to('/')}}/img/image_sql/products/<?= $item['productInfo']->filename ?>" alt=""></td>
                                                         <td class="si-text">
                                                             <div class="product-selected">
                                                                 <p>{{number_format($item['productInfo']->price)}} VND x {{$item['quantity']}}</p>
@@ -200,13 +230,15 @@
                                         </div>
                                     </div>
                                     @else
-                                    <div id="change-item-cart">
-                                        <span>Giỏ hàng trống</span>
-                                    </div>
+                                    <div class="select-total">
+                                            <span>total:</span>
+                                            <h5>0 VND</h5>
+                                            <input hidden id="total-quantity-cart" type="number" value="0">
+                                        </div>
                                     @endif
                                     <div class="select-button">
-                                        <a href="#" class="primary-btn view-card">VIEW CARD</a>
-                                        <a href="#" class="primary-btn checkout-btn">CHECK OUT</a>
+                                        <a href="{{ url('/shoping-cart') }}" class="primary-btn view-card">XEM GIỎ HÀNG</a>
+                                        <a href="{{ url('/checkout') }}" class="primary-btn checkout-btn">THANH TOÁN</a>
                                     </div>
                                 </div>
                             </li>
@@ -233,7 +265,7 @@
                         </div>
                         <ul>
                             @foreach($data['protype'] as $value)
-                            <li><a href="#">{{ $value['type_name'] }}</a></li>
+                            <li><a href="{{URL::to('/')}}/classifiProduct/<?=$value->type_id?>">{{ $value->type_name }}</a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -241,7 +273,8 @@
                 <div class="col-lg-9">
                     <div class="hero__search">
                         <div class="hero__search__form">
-                            <form action="search.php" method="get">
+                            <form action="{{ route('getSearch') }}" method="POST">
+                                @csrf
                                 <input type="text" placeholder="Từ khóa..." name="key">
                                 <button type="submit" class="site-btn">TÌM</button>
                             </form>
@@ -355,54 +388,146 @@
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
 
-    <script>
-        function AddCart(id) {
+    <script type="text/javascript">
+        function AddFavourite(id) {
             $.ajax({
-                url: 'AddCart/' + id,
-                type: 'GET',
+                url: "{{URL::to('/')}}/addFavourite/" + id,
+                dataType: 'html',
             }).done(function(response) {
-                RenderCart(response);
-                alertify.success('Thêm vào giỏ hàng thành công!');
+                if (response == true) {
+                    let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
+                    
+                    a++;
+                    $("#favourite-quantity").text(""+a);
+                    alertify.success("Đã thêm yêu thích");
+                    if (document.querySelector("#favourite" + id) != null) {
+                        document.querySelector("#favourite" + id).style.background = "#7fad39";
+                    }
+                    if (document.querySelector("#favourite-grid" + id) != null) {
+                        document.querySelector("#favourite-grid" + id).style.background = "#7fad39";
+                    }
 
+                    if (document.querySelector("#favourite-product-grid" + id) != null) {
+                        document.querySelector("#favourite-product-grid" + id).style.background = "#7fad39";
+                    }
+                    if (document.querySelector("#favourite-detail" + id) != null) {
+                        document.querySelector("#favourite-detail" + id).style.background = "#7fad39";
+                    }
+
+                    if (document.querySelector("#favourite-product-detail" + id) != null) {
+                        document.querySelector("#favourite-product-detail" + id).style.color = "#fb2410";
+                    }
+                } else {
+                    DeleteFavourite(id);
+                }
             });
         }
+
+        function DeleteFavourite(id) {
+            $.ajax({
+                url: "{{URL::to('/')}}/DeleteFavourite/" + id,
+                method: 'GET',
+                dataType: 'html',
+            }).done(function(response) {
+                let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
+                    a--;
+                    $("#favourite-quantity").text(""+a);
+                $("#favourite").empty();
+                $("#favourite").html(response);
+                alertify.success('Đã xoá yêu thích');
+                if (document.querySelector("#favourite" + id) != null) {
+                    document.querySelector("#favourite" + id).style.background = "#ffffff";
+                }
+                if (document.querySelector("#favourite-grid" + id) != null) {
+                    document.querySelector("#favourite-grid" + id).style.background = "#ffffff";
+                }
+                if (document.querySelector("#favourite-product-grid" + id) != null) {
+                    document.querySelector("#favourite-product-grid" + id).style.background = "#ffffff";
+                }
+                if (document.querySelector("#favourite-detail" + id) != null) {
+                    document.querySelector("#favourite-detail" + id).style.background = "#ffffff";
+                }
+                if (document.querySelector("#favourite-product-detail" + id) != null) {
+                    document.querySelector("#favourite-product-detail" + id).style.color = "#fff";
+                }
+            })
+        }
+
+        function AddCart(id, quantity = null) {
+            if (quantity != null) {
+                $.ajax({
+                    url: "{{URL::to('/')}}/AddCart/" + id + "/" + quantity,
+                    type: 'GET',
+                }).done(function(response) {
+                    RenderCart(response);
+                    alertify.success('Thêm vào giỏ hàng thành công!');
+                });
+            } else {
+                let temp = parseInt($("#detail-quantity").val());
+                AddCart(id, temp);
+            }
+        }
+
+       
         $("#change-item-cart").on("click", ".si-close i", function() {
             $.ajax({
-                url: 'Delete/' + $(this).data("id"),
+                url: "{{URL::to('/')}}/Delete/" + $(this).data("id"),
                 type: 'GET',
+
             }).done(function(response) {
                 RenderCart(response);
                 alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
-
             });
+
         });
 
         function RenderCart(response) {
             $("#change-item-cart").empty();
             $("#change-item-cart").html(response);
             $("#total-quantity").text($("#total-quantity-cart").val());
+
+            $.ajax({
+                url: "{{URL::to('/')}}/listCart",
+                dataType: 'html',
+                success: function(response) {
+                    if ($("#list-cart") != null) {
+                        $("#list-cart").empty();
+                        $("#list-cart").html(response);
+                    }
+                },
+
+            });
+
         }
 
         function DeleteItemListCart(id) {
             $.ajax({
-                url: 'DeleteItemCart/' + id,
+                url: "{{URL::to('/')}}/DeleteItemCart/" + id,
                 type: 'GET',
             }).done(function(response) {
                 RenderListCart(response);
                 alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
-
             })
         }
 
         function RenderListCart(response) {
             $("#list-cart").empty();
             $("#list-cart").html(response);
-            $("#total-quantity").text($("#total-quantity-cart").val());
+            $("#total-quantity").text($("#list-cart-quantity").val());
+            $.ajax({
+                url: "{{URL::to('/')}}/cartInfo",
+                dataType: 'html',
+                success: function(response) {
+                    $("#change-item-cart").html(response);
+                },
+
+            });
+
         }
 
         function UpdateCart(id) {
             $.ajax({
-                url: 'UpdateCart/' + id + '/' + $("#item-quantity-" + id).val(),
+                url: "{{URL::to('/')}}/UpdateCart/" + id + '/' + $("#item-quantity-" + id).val(),
                 type: 'GET',
             }).done(function(response) {
                 RenderListCart(response);
@@ -416,29 +541,32 @@
 
         // cat duong dan thanh mot mang va lay gia tri cuoi, de dem ra so sanh
         const index = href.split("/")[href.split("/").length - 1];
-        const index2 = href.split("/")[href.split("/").length - 2];
 
         // neu duong dan khong ton tai ky tu nao la index thi khong hien thi mau xanh
-        if (index.indexOf("home") < 0) {
+        if (href.indexOf("home") < 0) {
             document.querySelector("#index").classList.remove('active');
         }
 
+        if(index == "") {
+            document.querySelector("#index").classList.add('active');
+        }
+
         // cac cau lenh iff phia duoi nay thi NGUOC LAI
-        if (index.indexOf(document.querySelector("#shop-grid").id) >= 0) {
+        if (href.indexOf(document.querySelector("#shop-grid").id) >= 0) {
             document.querySelector("#shop-grid").classList.add('active');
         }
-        if (index.indexOf(document.querySelector("#contact").id) >= 0) {
+        if (href.indexOf(document.querySelector("#contact").id) >= 0) {
             document.querySelector("#contact").classList.add('active');
         }
 
         // phan nay danh cho Trang, cho no mau xanh va hien thi thanh phan da click
-        if (index2.indexOf(document.querySelector("#shop-details").id) >= 0) {
+        if (href.indexOf('shop-details') >= 0) {
             document.querySelector("#page").classList.add('active');
         }
-        if (index.indexOf(document.querySelector("#shoping-cart").id) >= 0) {
+        if (href.indexOf(document.querySelector("#shoping-cart").id) >= 0) {
             document.querySelector("#page").classList.add('active');
         }
-        if (index.indexOf(document.querySelector("#checkout").id) >= 0) {
+        if (href.indexOf(document.querySelector("#checkout").id) >= 0) {
             document.querySelector("#page").classList.add('active');
         }
     </script>
