@@ -13,6 +13,6 @@ class ProductsPhotos extends Model
 
     public function linkProduct()
     {
-        return $this->belongsTo('App\Product');
+        return $this->belongsTo('App\Product', 'product_id', 'id');
     }
 }

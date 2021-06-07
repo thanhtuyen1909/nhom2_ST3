@@ -40,7 +40,7 @@
                             <tr>
                                 <td class="shoping__cart__item">
                                     <img src="img/image_sql/products/{{$item['productInfo']->filename}}" alt="">
-                                    <h5>{{$item['productInfo']->name}}</h5>
+                                    <h5><a href="{{URL::to('/')}}/shop-details/{{$item['productInfo']->id}}">{{$item['productInfo']->name}}</a></h5>
                                 </td>
                                 <td class="shoping__cart__price">
                                     {{number_format($item['productInfo']->price)}} VND
@@ -48,7 +48,9 @@
                                 <td class="shoping__cart__quantity">
                                     <div class="quantity">
                                         <div class="pro-qty">
+                                        <span class="dec qtybtn" onclick="DeleteOneOfItemInListCart(<?= $item['productInfo']->id ?>)">-</span>
                                             <input id="item-quantity-<?= $item['productInfo']->id ?>" onchange="UpdateCart(<?= $item['productInfo']->id ?>)" type="text" value="{{$item['quantity']}}">
+                                            <span class="inc qtybtn" onclick="AddCart(<?= $item['productInfo']->id ?>, 1)">+</span>
                                         </div>
                                     </div>
                                 </td>
@@ -76,7 +78,7 @@
                                 <li>Tổng tiền <span>{{number_format(Session::get("Cart")->totalPrice)}} VND</span></li>
                                 <input id="list-cart-quantity" type="number" hidden value="{{Session::get('Cart')->totalQuantity}}">
                             </ul>
-                            <a href="#" class="primary-btn">Thanh toán</a>
+                            <a href="{{URL::to('/')}}/checkout" class="primary-btn">Thanh toán</a>
                         </div>
                     </div>
                 </div>
@@ -98,9 +100,8 @@
                             <h5>Tổng giỏ hàng</h5>
                             <ul>
                                 <li>Tổng tiền <span>0 VND</span></li>
-                               <li><input hidden id="list-cart-quantity" type="number" value="0"></li>
+                                <li><input hidden id="list-cart-quantity" type="number" value="0"></li>
                             </ul>
-                            <a href="#" class="primary-btn">Thanh toán</a>
                         </div>
                     </div>
                 </div>

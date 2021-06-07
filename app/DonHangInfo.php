@@ -4,13 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class DonHangInfo extends Model
 {
+    protected $table = 'donhanginfo';
     public $timestamps = false;
     protected $primaryKey = 'id';
-    protected $table = 'thongtinnhanhang';
     public $incrementing = true;
-    public function linkProtype(){
-        return $this->belongsTo('App\User','username','id');
+    public function linkUser(){
+        return $this->belongsTo('App\User','idUser','id');
     }
 }

@@ -14,6 +14,6 @@ class Comment extends Model
         return $this->belongsTo('App\User','username','id');
     }
     public function linkProduct(){
-        return $this->belongsTo('App\User','idSP','id');
+        return $this->belongsTo('App\Product','idSP','id');
     }
 }

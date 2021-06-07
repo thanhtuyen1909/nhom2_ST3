@@ -43,8 +43,8 @@ class User extends Authenticatable
     public function linkProtype(){
         return $this->belongsTo('App\Role','type_id');
     }
-    public function linkTTNH(){
-        return $this->hasMany('App\ThongTinNhanHang','username','id');
+    public function linkDonHangInfo(){
+        return $this->hasMany('App\donhanginfo','username','id');
     } 
     public function linkCart(){
         return $this->hasOne('App\Cart_model','id','id');

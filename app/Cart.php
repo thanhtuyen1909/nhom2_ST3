@@ -29,11 +29,21 @@ class Cart{
         $this->totalPrice += $product->price *$quantity;
         $this->totalQuantity+=$quantity;
     }
+
     public function DeleteItemCart($id){
         $this->totalQuantity -= $this->product[$id]['quantity'];
         $this->totalPrice -= $this->product[$id]['price'];
         unset($this->product[$id]);
     }
+
+    public function DeleteOneOfItemCart($id){
+        $this->totalQuantity -= 1;
+        $this->totalPrice -= $this->product[$id]['productInfo']->price;
+        $this->product[$id]['quantity'] -= 1;
+        $this->product[$id]['price'] -= $this->product[$id]['productInfo']->price;
+        
+    }
+
     public function UpdateCart($id,$quantity)
     {
         $this->totalQuantity -= $this->product[$id]['quantity'];
@@ -42,7 +52,6 @@ class Cart{
         $this->product[$id]['price'] = $quantity * $this->product[$id]['productInfo']->price;
         $this->totalQuantity += $quantity;
         $this->totalPrice +=  $this->product[$id]['price'];
-     
     }
 }
 ?>

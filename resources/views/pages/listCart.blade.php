@@ -15,7 +15,7 @@
             <tr>
                 <td class="shoping__cart__item">
                     <img src="{{URL::to('/')}}/img/image_sql/products/{{$item['productInfo']->filename}}" alt="">
-                    <h5>{{$item['productInfo']->name}}</h5>
+                    <h5><a href="{{URL::to('/')}}/shop-details/{{$item['productInfo']->id}}">{{$item['productInfo']->name}}</a></h5>
                 </td>
                 <td class="shoping__cart__price">
                     {{number_format($item['productInfo']->price)}} VND
@@ -23,7 +23,9 @@
                 <td class="shoping__cart__quantity">
                     <div class="quantity">
                         <div class="pro-qty">
+                            <span class="dec qtybtn" onclick="DeleteOneOfItemInListCart(<?= $item['productInfo']->id ?>)">-</span>
                             <input id="item-quantity-<?= $item['productInfo']->id ?>" onchange="UpdateCart(<?= $item['productInfo']->id ?>)" type="text" value="{{$item['quantity']}}">
+                            <span class="inc qtybtn" onclick="AddCart(<?= $item['productInfo']->id ?>, 1)">+</span>
                         </div>
                     </div>
                 </td>
@@ -41,7 +43,7 @@
 <div class="row">
     <div class="col-lg-6">
         <div class="shoping__cart__btns">
-            <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+            <a href="{{ url('/shop-grid') }}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
         </div>
     </div>
     <div class="col-lg-6 mr-auto">
@@ -51,7 +53,7 @@
                 <li>Tổng tiền <span>{{number_format(Session::get("Cart")->totalPrice)}} VND</span></li>
                 <input id="list-cart-quantity" type="number" hidden value="{{Session::get('Cart')->totalQuantity}}">
             </ul>
-            <a href="#" class="primary-btn">Thanh toán</a>
+            <a href="{{URL::to('/')}}/checkout" class="primary-btn">Thanh toán</a>
         </div>
     </div>
 </div>
@@ -65,7 +67,7 @@
 <div class="row">
     <div class="col-lg-6">
         <div class="shoping__cart__btns">
-            <a href="#" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
+            <a href="{{ url('/shop-grid') }}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
         </div>
     </div>
     <div class="col-lg-6 mr-auto">
@@ -75,7 +77,6 @@
                 <li>Tổng tiền <span>0 VND</span></li>
                 <li><input hidden id="list-cart-quantity" type="number" value="0"></li>
             </ul>
-            <a href="#" class="primary-btn">Thanh toán</a>
         </div>
     </div>
 </div>
@@ -83,11 +84,10 @@
 
 <script>
     var proQty = $('.pro-qty');
-    proQty.prepend('<span class="dec qtybtn">-</span>');
-    proQty.append('<span class="inc qtybtn">+</span>');
     proQty.on('click', '.qtybtn', function() {
         var $button = $(this);
         var oldValue = $button.parent().find('input').val();
+        console.log($button.parent().find('input').val());
         if ($button.hasClass('inc')) {
             var newVal = parseFloat(oldValue) + 1;
         } else {

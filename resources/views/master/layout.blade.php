@@ -10,25 +10,6 @@
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('img/logo.ico') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" type="text/css">
     <title>Ogani | Template</title>
-    <style>
-        .shoping__cart__item img {
-            width: 100px;
-        }
-
-        .shoping__cart__table-empty {
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-
-        }
-
-        .msg {
-            font-size: 3rem;
-            color: #7fad39;
-            text-align: center;
-            font-weight: 600;
-        }
-    </style>
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
@@ -81,7 +62,8 @@
                 <div class="header__top__right__language">
                     <div><i class="fa fa-user"> {{Auth::user()->name}}</i></div>
                     <ul>
-                        <li><a href="{{url('setting')}}">Setting</a></li>
+                        <li><a href="{{url('setting')}}">Thông tin tài khoản</a></li>
+                        <li><a href="{{url('listOrder')}}">Đơn hàng</a></li>
                         <li><a href="{{url('logout')}}">Logout</a></li>
                     </ul>
                 </div>
@@ -92,21 +74,15 @@
             <ul>
                 <li class="active"><a href="{{ url('/home') }}">Home</a></li>
                 <li><a href="{{ url('/shop-grid') }}">Cửa hàng</a></li>
-                <li><a href="#">Trang</a>
-                    <ul class="header__menu__dropdown">
-                        <li><a href="{{ url('/shoping-cart') }}">Giỏ hàng</a></li>
-                        <li><a href="{{ url('/checkout') }}">Thanh toán</a></li>
-                    </ul>
-                </li>
                 <li><a href="{{ url('/contact') }}">Liên hệ</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
         <div class="header__top__right__social">
-            <a href="#"><i class="fa fa-facebook"></i></a>
-            <a href="#"><i class="fa fa-twitter"></i></a>
-            <a href="#"><i class="fa fa-linkedin"></i></a>
-            <a href="#"><i class="fa fa-pinterest-p"></i></a>
+            <a href="https://www.facebook.com/groups/231663862028818"><i class="fa fa-facebook"></i></a>
+            <a href="https://www.instagram.com/"><i class="fa fa-twitter"></i></a>
+            <a href="https://twitter.com/?lang=vi"><i class="fa fa-linkedin"></i></a>
+            <a href="https://www.pinterest.com/"><i class="fa fa-pinterest-p"></i></a>
         </div>
 
         <div class="humberger__menu__contact">
@@ -148,8 +124,9 @@
                             <div class="header__top__right__auth">
                                 <div class="header__top__right__language">
                                     <div><i class="fa fa-user"> {{Auth::user()->name}}</i></div>
-                                    <ul>
-                                        <li><a href="{{url('setting')}}">Setting</a></li>
+                                    <ul style="width: 200px; left: -50px;">
+                                        <li><a href="{{url('setting')}}">Thông tin tài khoản</a></li>
+                                        <li><a href="{{url('listOrder')}}">Đơn hàng</a></li>
                                         <li><a href="{{url('logout')}}">Logout</a></li>
                                     </ul>
                                 </div>
@@ -173,12 +150,6 @@
                         <ul>
                             <li id="index" class="active"><a href="{{ url('/home') }}">Home</a></li>
                             <li id="shop-grid"><a href="{{ url('/shop-grid') }}">Cửa hàng</a></li>
-                            <li id="page"><a href="#">Trang</a>
-                                <ul class="header__menu__dropdown">
-                                    <li id="shoping-cart"><a href="{{ url('/shoping-cart') }}">Giỏ hàng</a></li>
-                                    <li id="checkout"><a href="{{ url('/checkout') }}">Thanh toán</a></li>
-                                </ul>
-                            </li>
                             <li id="contact"><a href="{{ url('/contact') }}">Liên hệ</a></li>
                         </ul>
                     </nav>
@@ -186,6 +157,7 @@
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
+                            @if(Session::has("Login") != null)
                             @if(Session::has("Favourite") != null)
                             <li><a href="{{ url('/favourite') }}"><i class="fa fa-heart"></i> <span id="favourite-quantity">{{Session::get('Favourite')}}</span></a></li>
                             @else
@@ -231,17 +203,63 @@
                                     </div>
                                     @else
                                     <div class="select-total">
-                                            <span>total:</span>
-                                            <h5>0 VND</h5>
-                                            <input hidden id="total-quantity-cart" type="number" value="0">
-                                        </div>
-                                    @endif
-                                    <div class="select-button">
-                                        <a href="{{ url('/shoping-cart') }}" class="primary-btn view-card">XEM GIỎ HÀNG</a>
-                                        <a href="{{ url('/checkout') }}" class="primary-btn checkout-btn">THANH TOÁN</a>
+                                        <span>total:</span>
+                                        <h5>0 VND</h5>
+                                        <input hidden id="total-quantity-cart" type="number" value="0">
                                     </div>
+                                    @endif
                                 </div>
                             </li>
+                            @else
+                            <li><a href="{{ url('/login') }}"><i class="fa fa-heart"></i> <span id="favourite-quantity">0</span></a></li>
+                            <li class="cart-icon"><a href="{{ url('/login') }}"><i class="fa fa-shopping-bag"></i>
+                                    @if(Session::has("Cart") != null)
+                                    <span id="total-quantity">{{Session::get("Cart")->totalQuantity}}</span>
+                                    @else
+                                    <span id="total-quantity">0</span>
+                                    @endif
+                                </a>
+                                <div class="cart-hover">
+                                    @if(Session::has("Cart") != null)
+                                    <div id="change-item-cart">
+                                        <div class="select-items">
+                                            <table>
+                                                <tbody>
+                                                    @foreach(Session::get("Cart")->product as $item)
+                                                    <tr>
+                                                        <td class="si-pic"><img class="img-cart" src="{{URL::to('/')}}/img/image_sql/products/<?= $item['productInfo']->filename ?>" alt=""></td>
+                                                        <td class="si-text">
+                                                            <div class="product-selected">
+                                                                <p>{{number_format($item['productInfo']->price)}} VND x {{$item['quantity']}}</p>
+                                                                <a href="{{URL::to('/')}}/shop-details/{{$item['productInfo']->id}}">
+                                                                    <h6>{{$item['productInfo']->name}} </h6>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                        <td class="si-close">
+                                                            <i class="fa fa-times" data-id="{{$item['productInfo']->id}}"></i>
+                                                        </td>
+                                                    </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="select-total">
+                                            <span>total:</span>
+                                            <h5>{{number_format(Session::get("Cart")->totalPrice)}} VND</h5>
+                                            <input hidden id="total-quantity-cart" type="number" value="{{Session::get('Cart')->totalQuantity}}">
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="select-total">
+                                        <span>total:</span>
+                                        <h5>0 VND</h5>
+                                        <input hidden id="total-quantity-cart" type="number" value="0">
+                                    </div>
+                                    @endif
+                                </div>
+                            </li>
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -265,7 +283,7 @@
                         </div>
                         <ul>
                             @foreach($data['protype'] as $value)
-                            <li><a href="{{URL::to('/')}}/classifiProduct/<?=$value->type_id?>">{{ $value->type_name }}</a></li>
+                            <li><a href="{{URL::to('/')}}/classifiProduct/<?= $value->type_id ?>">{{ $value->type_name }}</a></li>
                             @endforeach
                         </ul>
                     </div>
@@ -339,15 +357,11 @@
                     <div class="footer__widget">
                         <h6>Tham gia bản tin của chúng tôi ngay bây giờ!</h6>
                         <p>Nhận thông tin về cập nhật và các ưu đãi đặc biệt mới nhất qua Email.</p>
-                        <form action="#">
-                            <input type="text" placeholder="Nhập địa chỉ email...">
-                            <button type="submit" class="site-btn">Đăng ký</button>
-                        </form>
                         <div class="footer__widget__social">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-pinterest"></i></a>
+                            <a href="https://www.facebook.com/groups/231663862028818"><i class="fa fa-facebook"></i></a>
+                            <a href="https://www.instagram.com/"><i class="fa fa-instagram"></i></a>
+                            <a href="https://twitter.com/?lang=vi"><i class="fa fa-twitter"></i></a>
+                            <a href="https://www.pinterest.com/"><i class="fa fa-pinterest"></i></a>
                         </div>
                     </div>
                 </div>
@@ -387,7 +401,6 @@
     <!-- JavaScript -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
-
     <script type="text/javascript">
         function AddFavourite(id) {
             $.ajax({
@@ -396,9 +409,9 @@
             }).done(function(response) {
                 if (response == true) {
                     let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
-                    
+
                     a++;
-                    $("#favourite-quantity").text(""+a);
+                    $("#favourite-quantity").text("" + a);
                     alertify.success("Đã thêm yêu thích");
                     if (document.querySelector("#favourite" + id) != null) {
                         document.querySelector("#favourite" + id).style.background = "#7fad39";
@@ -430,8 +443,8 @@
                 dataType: 'html',
             }).done(function(response) {
                 let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
-                    a--;
-                    $("#favourite-quantity").text(""+a);
+                a--;
+                $("#favourite-quantity").text("" + a);
                 $("#favourite").empty();
                 $("#favourite").html(response);
                 alertify.success('Đã xoá yêu thích');
@@ -468,7 +481,7 @@
             }
         }
 
-       
+
         $("#change-item-cart").on("click", ".si-close i", function() {
             $.ajax({
                 url: "{{URL::to('/')}}/Delete/" + $(this).data("id"),
@@ -495,9 +508,7 @@
                         $("#list-cart").html(response);
                     }
                 },
-
             });
-
         }
 
         function DeleteItemListCart(id) {
@@ -520,9 +531,7 @@
                 success: function(response) {
                     $("#change-item-cart").html(response);
                 },
-
             });
-
         }
 
         function UpdateCart(id) {
@@ -533,6 +542,16 @@
                 RenderListCart(response);
                 alertify.success('Đã cập nhật!');
             })
+        }
+
+        function DeleteOneOfItemInListCart(id) {
+            $.ajax({
+                url: "{{URL::to('/')}}/DeleteOneOfItemCart/" + id,
+                type: 'GET',
+            }).done(function(response) {
+                RenderListCart(response);
+                alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
+            });
         }
     </script>
     <script>
@@ -547,7 +566,7 @@
             document.querySelector("#index").classList.remove('active');
         }
 
-        if(index == "") {
+        if (index == "") {
             document.querySelector("#index").classList.add('active');
         }
 
@@ -557,17 +576,6 @@
         }
         if (href.indexOf(document.querySelector("#contact").id) >= 0) {
             document.querySelector("#contact").classList.add('active');
-        }
-
-        // phan nay danh cho Trang, cho no mau xanh va hien thi thanh phan da click
-        if (href.indexOf('shop-details') >= 0) {
-            document.querySelector("#page").classList.add('active');
-        }
-        if (href.indexOf(document.querySelector("#shoping-cart").id) >= 0) {
-            document.querySelector("#page").classList.add('active');
-        }
-        if (href.indexOf(document.querySelector("#checkout").id) >= 0) {
-            document.querySelector("#page").classList.add('active');
         }
     </script>
 </body>

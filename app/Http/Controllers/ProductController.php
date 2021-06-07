@@ -84,8 +84,9 @@ class ProductController extends Controller
             $exe_flgF = true;
             $extension = $request->file('fileInput')->getClientOriginalExtension();
             $check = in_array($extension, $allowedfileExtension);
-            // duyệt từng ảnh và thực hiện lưu
             if (!$check) {
+                // nếu có file nào không đúng đuôi mở rộng thì đổi flag thành false
+                session()->flash('success', 'Hình ảnh có đuôi mở rộng không đúng!!!');
                 $exe_flgF = false;
             }
             if ($exe_flgF) {
@@ -128,6 +129,8 @@ class ProductController extends Controller
 
                     $photo->move($destinationPathImg, $filename);
                 }
+            } else {
+                    session()->flash('success', 'Hình ảnh có đuôi mở rộng không đúng!!!');
             }
         }
 

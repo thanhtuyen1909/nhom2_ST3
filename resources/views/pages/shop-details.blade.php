@@ -58,7 +58,9 @@
                     <div class="product__details__quantity">
                         <div class="quantity">
                             <div class="pro-qty">
+                                <span class="dec qtybtn">-</span>
                                 <input id="detail-quantity" type="text" value="1">
+                                <span class="inc qtybtn">+</span>
                             </div>
                         </div>
                     </div>
@@ -67,7 +69,6 @@
                     @else
                     <a href="{{url('login')}}" class="primary-btn">ADD TO CARD</a>
                     @endif
-                    <!-- <a href="#" class="heart-icon"><i class="fas fa-heart"></i></a> -->
                     <?php $temp = false; ?>
                     @if(Session::get('Login') != null)
                     @if(isset($data['check']))
@@ -138,7 +139,7 @@
                 <div class="product__item">
                     <div class="product__item__pic set-bg" data-setbg="../img/image_sql/products/<?= $item->filename ?>">
                         <ul class="product__item__pic__hover">
-                        <?php $temp = false; ?>
+                            <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
                             @if(isset($data['check']))
                             @foreach($data['check'] as $check)

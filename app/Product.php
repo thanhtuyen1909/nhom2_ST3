@@ -15,6 +15,6 @@ class Product extends Model
         return $this->belongsTo('App\Protype','type_id');
     } 
      public function linkComment(){
-        return $this->hasMany('App\Comment','id','id');
+        return $this->hasMany('App\Comment', 'idSP', 'id');
     }
 }

@@ -4,13 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class DonHang extends Model
 {
-    public $timestamps = true;
     protected $primaryKey = 'id';
     protected $table = 'donhang';
-    public $incrementing = true;
-    public function linkCTDH(){
-        return $this->hasMany('App\ChiTietDonHang','idDonHang','id');
+    public $timestamps = false;
+    public function linkDonHangInfo(){
+        return $this->hasMany('App\DonHangInfo','idTTNH','id');
     }
 }

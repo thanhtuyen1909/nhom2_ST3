@@ -33,15 +33,19 @@ Route::get('/admin/deleteProtype/{id}', 'ProtypeController@destroy');
 
 // User
 Route::get('/', 'DomainController@showProduct');
-
+Route::post('/checkoutInput','DomainController@createDonHang');
+Route::post('/sendContact','DomainController@createContact');
 Route::get('/AddCart/{id}/{quantity}', 'CartController@AddCart');
 Route::get('/Delete/{id}','CartController@DeleteItemCart');
 Route::get('/DeleteItemCart/{id}','CartController@DeleteItemListCart');
+Route::get('/DeleteOneOfItemCart/{id}','CartController@DeleteOneOfItemCart');
 Route::get('/UpdateCart/{id}/{quantity}','CartController@UpdateCart');
 Route::get('/addFavourite/{id}','DomainController@Favourite');
 Route::get('/DeleteFavourite/{id}','DomainController@DeleteFavourite');
 Route::get('/shop-details/{id}', 'DomainController@show');
-Route::get('/shop-grid','DomainController@Shop');
+Route::get('/shop-grid','DomainController@showShopGrid');
+Route::get('/order-details/{id}', 'DomainController@showOrderDetail');
+
 
 Route::get('/classifiProduct/{id}', 'DomainController@showProtype');
 Route::post('/search', 'DomainController@getSearch')->name('getSearch');

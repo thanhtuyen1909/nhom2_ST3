@@ -1,0 +1,9 @@
+﻿- thêm csdl Góp ý
+- click icon Giỏ hàng -> nếu chưa đnhập -> trang login 
+- click icon Yêu thích -> tương tự giỏ hàng
+- hover icon Giỏ hàng -> nếu chưa đnhập thì k hiện
+- đăng ký thì xác minh email
+- sale được hiển thị tất cả các nơi
+- sale tính tự động
+- user có role là 1 thì k vô ngdung đc ngược lại
+- thông báo: "Cảm ơn bạn đã gửi lời góp ý tới chúng tôi! Lời góp ý của bạn sẽ là một phần động lực để thúc đẩy chúng tôi dần hoàn thiện và phát triển hơn"

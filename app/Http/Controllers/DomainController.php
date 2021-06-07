@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Cart;
 use App\Cart_model;
 use App\CartInfo;
+use App\Contact;
+use App\ChiTietDonHang;
+use App\DonHang;
+use App\DonHangInfo;
 use App\Favourite;
 use App\FavouriteInfo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Protype;
 use App\Product;
+use App\ProductsPhotos;
+use App\Status;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Session\Session;
 
@@ -33,20 +40,20 @@ class DomainController extends Controller
     public function getData()
     {
         $saleProduct = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
-        ->where('products_photos.photo_feature', '=', 1)
-        ->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+            ->where('products_photos.photo_feature', '=', 1)
+            ->get();
 
         $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->get();
         $protype = DB::table('protypes')->get();
         $productLastList1 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->limit(3)->get();
         $productLastList2 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->skip(3)->take(3)->get();
-        
+
         $product1 = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->where('products_photos.photo_feature', '=', 1)
-        ->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', '=', 1)
+            ->get();
 
         $data = [];
         $data['product'] = $product;
@@ -58,6 +65,8 @@ class DomainController extends Controller
         $data['proLast1'] = $productLastList1;
         $data['proLast2'] = $productLastList2;
         $data['saleProduct'] = $saleProduct;
+
+        $data['listOrder'] = DB::table('donhang')->join('status', 'status', '=', 'status.status_id')->get();
 
         return $data;
     }
@@ -96,7 +105,7 @@ class DomainController extends Controller
                     $totalPrice = 0;
                     foreach ($cartInfo as $info) {
                         $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products.id', '=', $info->idProduct)->take(1)->get()[0];
-                        
+
                         $subProduct = ['quantity' => $info->quantity, 'price' => $info->quantity * $temp_product->price, 'productInfo' => $temp_product];
                         $totalQuantity += $subProduct['quantity'];
                         $totalPrice += $subProduct['price'];
@@ -115,6 +124,7 @@ class DomainController extends Controller
             }
         }
     }
+
     public function index(Request $request, $name)
     {
         $this->Check($request);
@@ -134,8 +144,14 @@ class DomainController extends Controller
         $data = $this->getData();
         $data['check'] = $check;
         $data['favourite'] = $favouriteProduct;
-     
-        return view('pages.' . $name, ['data' => $data]);
+
+        if ($name == "favourite" || $name == "shoping-cart" || $name == "listOrder") {
+            if ($request->session()->get('Login') != null) {
+                return view('pages.' . $name, ['data' => $data]);
+            } else return $this->getLogin();
+        } else {
+            return view('pages.' . $name, ['data' => $data]);
+        }
     }
 
     public function Favourite(Request $req, $id)
@@ -184,7 +200,7 @@ class DomainController extends Controller
     }
 
     // shop-grid
-    public function Shop(Request $req)
+    public function showShopGrid(Request $req)
     {
         $data = $this->getData();
 
@@ -206,6 +222,47 @@ class DomainController extends Controller
         return view('.pages/shop-grid', ['data' => $data]);
     }
 
+    // order-details
+    public function showOrderDetail($idDH, Request $req) 
+    {
+        $data = $this->getData();
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite) > 0) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+            $check = [];
+            $favouriteProduct = [];
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
+
+            $data['favourite'] = $favouriteProduct;
+            $data['check'] = $check;
+        }
+
+        $listOrderDetail = DB::table('chitietdonhang')->where('idDonHang', '=', $idDH)->get();
+        $listOderDetailName = [];
+        $photo_product = [];
+        
+        for ($i=0; $i < count($listOrderDetail); $i++) { 
+            $listOderDetailName[$i] = ChiTietDonHang::find($listOrderDetail[$i]->id)->linkProduct->name;
+            $photo_product[$i] = DB::table('products_photos')->where([
+                ['product_id', '=', $listOrderDetail[$i]->idSP],
+                ['photo_feature', '=', 1],
+            ])->select('filename')->get();
+        }
+
+        $data = $this->getData();
+
+        $trangThaiDH = Status::where('status_id', DonHang::find($idDH)->status)->get();
+
+        $thongTinNH = DonHangInfo::where('idDonHang', $idDH)->get();
+
+        return view('pages.order-details', compact('thongTinNH', 'listOrderDetail', 'listOderDetailName', 'photo_product', 'trangThaiDH'), ['data' => $data]);
+    }
+
     /**
      * Show the list product and protype at pages.home
      */
@@ -213,7 +270,7 @@ class DomainController extends Controller
     public function showProduct(Request $req)
     {
         $data = $this->getData();
-        
+
         $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
         if (count($favourite)) {
             $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
@@ -227,7 +284,7 @@ class DomainController extends Controller
             }
             $data['favourite'] = $favouriteProduct;
             $data['check'] = $check;
-        }  
+        }
         return view('pages.home', ['data' => $data]);
     }
 
@@ -240,9 +297,28 @@ class DomainController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createContact(Request $request)
     {
-        //
+        //Set timezone
+        date_default_timezone_set("Asia/Ho_Chi_Minh");
+
+        $request->validate([
+            'hoten' => 'required',
+            'email' => 'required',
+            'soDT' => 'required',
+            'tieude' => 'required',
+            'noidung' => 'required',
+        ]);
+
+        $contact = new Contact();
+        $contact->hoten = $request->hoten;
+        $contact->sdt = $request->soDT;
+        $contact->email = $request->email;
+        $contact->tieude = $request->tieude;
+        $contact->noidung = $request->noidung;
+        $contact->save();
+
+        return redirect()->route('home');
     }
 
     /**
@@ -251,9 +327,58 @@ class DomainController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function createDonHang(Request $request)
     {
-        //
+        //Set timezone
+        date_default_timezone_set("Asia/Ho_Chi_Minh");
+
+        $request->validate([
+            'hoTen' => 'required',
+            'diaChi' => 'required',
+            'soDT' => 'required',
+        ]);
+        // lưu đơn hàng
+        $donHang = new DonHang();
+        $donHangInfo = new DonHangInfo();
+      
+        $cart = $request->session()->get("Cart");
+
+        $date = str_replace(':', '', str_replace(' ', '', str_replace('/', '', date("d/m/Y H:i:s"))));
+
+        $donHang->id = "DH". $date;
+        $donHang->totalQuantity = $cart->totalQuantity;
+        $donHang->totalPrice = $cart->totalPrice;
+        $donHang->status = 1;
+        $donHang->idUser = $request->session()->get('Login');
+        $donHang->save();
+
+        foreach ($cart->product as $item) {
+            $chiTietDH = new ChiTietDonHang();
+            $chiTietDH->idDonHang = "DH". $date;
+            $chiTietDH->idSP = $item['productInfo']->id;
+            $chiTietDH->soluong = $item['quantity'];
+            $chiTietDH->thanhtien = $item['price'];
+            $chiTietDH->save();
+        }
+
+        $donHangInfo->hoten = $request->hoTen;
+        $donHangInfo->diachi = $request->diaChi;
+        $donHangInfo->sdt = $request->soDT;
+        $donHangInfo->ghichu = $request->ghiChu;
+        $donHangInfo->idDonHang = "DH". $date;
+        $donHangInfo->save();
+
+        
+        $data = $this->getData();
+
+        $request->session()->forget('Cart');
+        $listCart = Cart_model::where('idUser', '=', $request->session()->get('Login'))->get();
+        $cartInfos = CartInfo::where('idCart', '=', $listCart[0]['idCart'])->get();
+        foreach($cartInfos as $cartInfo) {
+            CartInfo::destroy($cartInfo->id);
+        }
+
+        return view('pages.listOrder', ['data' => $data]);
     }
 
     /**
@@ -262,7 +387,7 @@ class DomainController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id,Request $req)
+    public function show($id, Request $req)
     {
         $data = $this->getData();
         $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();

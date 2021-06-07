@@ -6,10 +6,10 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Contact Us</h2>
+                    <h2>Liên hệ</h2>
                     <div class="breadcrumb__option">
                         <a href="{{ url('/home') }}">Home</a>
-                        <span>Contact Us</span>
+                        <span>Liên hệ</span>
                     </div>
                 </div>
             </div>
@@ -26,20 +26,20 @@
                 <div class="contact__widget">
                     <span class="icon_phone"></span>
                     <h4>Phone</h4>
-                    <p>+01-3-8888-6868</p>
+                    <p>+84 0123 456 789</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 text-center">
                 <div class="contact__widget">
                     <span class="icon_pin_alt"></span>
-                    <h4>Address</h4>
-                    <p>60-49 Road 11378 New York</p>
+                    <h4>Địa chỉ</h4>
+                    <p>53 Võ Văn Ngân, P.Linh Chiểu, Q.Thủ Đức, TP.HCM</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-6 text-center">
                 <div class="contact__widget">
                     <span class="icon_clock_alt"></span>
-                    <h4>Open time</h4>
+                    <h4>Mở cửa</h4>
                     <p>10:00 am to 23:00 pm</p>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                 <div class="contact__widget">
                     <span class="icon_mail_alt"></span>
                     <h4>Email</h4>
-                    <p>hello@colorlib.com</p>
+                    <p>nhom2_ST3@gmail.com</p>
                 </div>
             </div>
         </div>
@@ -57,14 +57,14 @@
 
 <!-- Map Begin -->
 <div class="map">
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d49116.39176087041!2d-86.41867791216099!3d39.69977417971648!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x886ca48c841038a1%3A0x70cfba96bf847f0!2sPlainfield%2C%20IN%2C%20USA!5e0!3m2!1sen!2sbd!4v1586106673811!5m2!1sen!2sbd" height="500" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
-    <div class="map-inside">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.4786145912058!2d106.755745014117!3d10.85115516077873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317527bd532d45d9%3A0x6b46595d312dcffe!2zNTMgVsO1IFbEg24gTmfDom4sIExpbmggQ2hp4buDdSwgVGjhu6cgxJDhu6ljLCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmgsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1622915313747!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <div class="map-inside" style="top:-5px; left:49.5%;">
         <i class="icon_pin"></i>
         <div class="inside-widget">
-            <h4>New York</h4>
+            <h4>OganiShop</h4>
             <ul>
-                <li>Phone: +12-345-6789</li>
-                <li>Add: 16 Creek Ave. Farmingdale, NY</li>
+                <li>Phone: +84 0123 456 789</li>
+                <li>Địa chỉ: 53 Võ Văn Ngân, P.Linh Chiểu, Q.Thủ Đức, TP.HCM</li>
             </ul>
         </div>
     </div>
@@ -77,21 +77,28 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="contact__form__title">
-                    <h2>Leave Message</h2>
+                    <h2>Góp ý</h2>
                 </div>
             </div>
         </div>
-        <form action="#">
+        <form action="{{URL::to('/')}}/sendContact" method="post">
+            @csrf
             <div class="row">
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Your name">
+                    <input type="text" placeholder="Điền họ & tên" name="hoten" require>
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Your Email">
+                    <input type="text" placeholder="Điền số điện thoại" name="soDT" require>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <input type="text" placeholder="Điền email" name="email" require> 
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <input type="text" placeholder="Tiêu đề" name="tieude" require>
                 </div>
                 <div class="col-lg-12 text-center">
-                    <textarea placeholder="Your message"></textarea>
-                    <button type="submit" class="site-btn">SEND MESSAGE</button>
+                    <textarea placeholder="Nội dung" name="noidung" require></textarea>
+                    <button type="submit" class="site-btn">Gửi</button>
                 </div>
             </div>
         </form>
