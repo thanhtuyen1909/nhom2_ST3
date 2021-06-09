@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Auth;
 */
 
 // Admin
+//Contact
+Route::get('/admin/listContact', 'AdminController@showListContact');
+Route::get('/admin/updateSeen/{id}', 'AdminController@updateListContact');
+
 // Product
 Route::get('/admin/products', 'ProductController@index')->name('product');
 Route::post('/admin/add', 'ProductController@store');
@@ -30,6 +34,9 @@ Route::get('/admin/edit-protype/{id}', 'ProtypeController@show');
 Route::post('/admin/addProtype', 'ProtypeController@store');
 Route::post('/admin/editProtype/{id}', 'ProtypeController@update');
 Route::get('/admin/deleteProtype/{id}', 'ProtypeController@destroy');
+
+//Contact
+Route::get('/admin', 'AdminController@showAdmin');
 
 // User
 Route::get('/', 'DomainController@showProduct');
@@ -51,8 +58,10 @@ Route::get('/classifiProduct/{id}', 'DomainController@showProtype');
 Route::post('/search', 'DomainController@getSearch')->name('getSearch');
 
 Auth::routes();
+
 Route::get('/login','DomainController@getLogin');
 Route::get('/logout', 'DomainController@logout');
+Route::get('/listOrder', 'DomainController@showDonHang');
 Route::get('/{name?}', 'DomainController@index');
 
 Auth::routes();

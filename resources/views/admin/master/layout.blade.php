@@ -76,7 +76,8 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a id="products" class="dropdown-item" href="{{ url('/admin/products') }}"><i class="fas fa-archive"></i> Sản phẩm - Loại sản phẩm</a>
-                                <a id="donhang" class="dropdown-item" href="#"><i class="fas fa-box"></i> Đơn hàng</a>
+                                <a id="donhang" class="dropdown-item" href="{{ url('/admin/') }}"><i class="fas fa-box"></i> Đơn hàng</a>
+                                <a id="donhang" class="dropdown-item" href="{{ url('/admin/listContact') }}"><i class="fas fa-envelope-open-text"></i> Góp ý</a>
                             </div>
                         </li>
                         <li id="binhluan" class="nav-item">
@@ -223,6 +224,33 @@
                 alertify.success('Đã xoá loại sản phẩm!!!');
             });
         }
+
+        //checkbox in contact
+        const checkBContact = document.querySelectorAll('#checkContact');
+
+        checkBContact.forEach(element => {
+            element.addEventListener('click', function() {
+                if (this.checked) {
+                    $.ajax({
+                        url: "{{URL::to('/')}}/admin/updateSeen/" + element.value,
+                        method: 'GET',
+                    }).done(function(response) {
+                        $("#contact-body").empty();
+                        $("#contact-body").html(response);
+                        alertify.success('Đã xem góp ý!!!');
+                    });
+                } else {
+                    $.ajax({
+                        url: "{{URL::to('/')}}/admin/updateSeen/" + element.value,
+                        method: 'GET',
+                    }).done(function(response) {
+                        $("#contact-body").empty();
+                        $("#contact-body").html(response);
+                        alertify.success('Đã huỷ xem góp ý!!!');
+                    });
+                }
+            });
+        });
     </script>
     <script>
         // lay duong dan trang web

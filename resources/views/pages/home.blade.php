@@ -53,7 +53,7 @@
 
         <div class="row featured__filter">
             @foreach($data['product'] as $value)
-            @if($value->type_id == 4 && $value->feature == 1)
+            @if($value->type_id == 4 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix haisan">
                 <div class="featured__item">
                     <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
@@ -91,7 +91,7 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value->type_id == 5 && $value->feature == 1)
+            @if($value->type_id == 5 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix bovatrung">
                 <div class="featured__item">
                     <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
@@ -129,7 +129,7 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value->type_id == 3 && $value->feature == 1)
+            @if($value->type_id == 3 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix traicayvahat">
                 <div class="featured__item">
                     <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
@@ -167,7 +167,7 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value->type_id == 1 && $value->feature == 1)
+            @if($value->type_id == 1 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-3 col-sm-6 mix fresh-meat">
                 <div class="featured__item">
                     <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
@@ -205,7 +205,7 @@
             @endforeach
 
             @foreach($data['product'] as $value)
-            @if($value->type_id == 2 && $value->feature == 1)
+            @if($value->type_id == 2 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix raucu">
                 <div class="featured__item">
                     <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">

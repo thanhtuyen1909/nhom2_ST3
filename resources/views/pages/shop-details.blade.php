@@ -25,6 +25,9 @@
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__pic">
+                    @if($data['product'][0]->sale > 0)
+                    <div class="product__details__discount__percent">-{{$data['product'][0]->sale}}%</div>
+                    @endif
                     <div class="product__details__pic__item">
                         @foreach($data['product'] as $item)
                         @if($item->photo_feature == 1)
@@ -32,7 +35,6 @@
                         @endif
                         @endforeach
                     </div>
-
                     <div class="product__details__pic__slider owl-carousel">
                         @foreach($data['product'] as $item)
                         @if($item->photo_feature == 0)
@@ -53,7 +55,7 @@
                         <i class="fa fa-star-half-o"></i>
                         <span>(18 reviews)</span>
                     </div>
-                    <div class="product__details__price">{{number_format($data['product'][0]->price)}} VND</div>
+                    <div class="product__details__price">{{number_format($data['product'][0]->price*(100-$data['product'][0]->sale)/100)}} VND <span>{{number_format($data['product'][0]->price)}} VND</span></div>
                     <p>{{ $data['product'][0]->description }}</p>
                     <div class="product__details__quantity">
                         <div class="quantity">

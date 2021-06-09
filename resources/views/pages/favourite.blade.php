@@ -6,10 +6,10 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Favourite Product</h2>
+                    <h2>Sản phẩm yêu thích</h2>
                     <div class="breadcrumb__option">
                         <a href="{{ url('/home') }}">Home</a>
-                        <span>Favourite Product</span>
+                        <span>Sản phẩm yêu thích</span>
                     </div>
                 </div>
             </div>

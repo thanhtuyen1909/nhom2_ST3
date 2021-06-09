@@ -40,20 +40,28 @@ class DomainController extends Controller
     public function getData()
     {
         $saleProduct = DB::table('products')
-            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
-            ->where('products_photos.photo_feature', '=', 1)
-            ->get();
-
-        $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->get();
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+        ->where('products_photos.photo_feature', '=', 1)
+        ->get();
+        $product = DB::table('products')
+        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->get();
         $protype = DB::table('protypes')->get();
-        $productLastList1 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->limit(3)->get();
-        $productLastList2 = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->orderby('products.id', 'desc')->skip(3)->take(3)->get();
+        $productLastList1 = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->orderby('products.id', 'desc')
+        ->limit(3)
+        ->get();
+        $productLastList2 = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->orderby('products.id', 'desc')
+        ->skip(3)->take(3)->get();
 
         $product1 = DB::table('products')
-            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-            ->where('products_photos.photo_feature', '=', 1)
-            ->get();
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->where('products_photos.photo_feature', '=', 1)->get();
 
         $data = [];
         $data['product'] = $product;
@@ -66,7 +74,7 @@ class DomainController extends Controller
         $data['proLast2'] = $productLastList2;
         $data['saleProduct'] = $saleProduct;
 
-        $data['listOrder'] = DB::table('donhang')->join('status', 'status', '=', 'status.status_id')->get();
+        
 
         return $data;
     }
@@ -210,7 +218,9 @@ class DomainController extends Controller
             $check = [];
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
-                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $temp_product = DB::table('products')
+                ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+                ->where('id', '=', $info->idProduct)->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -223,7 +233,7 @@ class DomainController extends Controller
     }
 
     // order-details
-    public function showOrderDetail($idDH, Request $req) 
+    public function showOrderDetail($idDH, Request $req)
     {
         $data = $this->getData();
         $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
@@ -232,7 +242,8 @@ class DomainController extends Controller
             $check = [];
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
-                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+                ->where('id', '=', $info->idProduct)->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -245,8 +256,8 @@ class DomainController extends Controller
         $listOrderDetail = DB::table('chitietdonhang')->where('idDonHang', '=', $idDH)->get();
         $listOderDetailName = [];
         $photo_product = [];
-        
-        for ($i=0; $i < count($listOrderDetail); $i++) { 
+
+        for ($i = 0; $i < count($listOrderDetail); $i++) {
             $listOderDetailName[$i] = ChiTietDonHang::find($listOrderDetail[$i]->id)->linkProduct->name;
             $photo_product[$i] = DB::table('products_photos')->where([
                 ['product_id', '=', $listOrderDetail[$i]->idSP],
@@ -340,12 +351,12 @@ class DomainController extends Controller
         // lưu đơn hàng
         $donHang = new DonHang();
         $donHangInfo = new DonHangInfo();
-      
+
         $cart = $request->session()->get("Cart");
 
         $date = str_replace(':', '', str_replace(' ', '', str_replace('/', '', date("d/m/Y H:i:s"))));
 
-        $donHang->id = "DH". $date;
+        $donHang->id = "DH" . $date;
         $donHang->totalQuantity = $cart->totalQuantity;
         $donHang->totalPrice = $cart->totalPrice;
         $donHang->status = 1;
@@ -354,7 +365,7 @@ class DomainController extends Controller
 
         foreach ($cart->product as $item) {
             $chiTietDH = new ChiTietDonHang();
-            $chiTietDH->idDonHang = "DH". $date;
+            $chiTietDH->idDonHang = "DH" . $date;
             $chiTietDH->idSP = $item['productInfo']->id;
             $chiTietDH->soluong = $item['quantity'];
             $chiTietDH->thanhtien = $item['price'];
@@ -365,16 +376,16 @@ class DomainController extends Controller
         $donHangInfo->diachi = $request->diaChi;
         $donHangInfo->sdt = $request->soDT;
         $donHangInfo->ghichu = $request->ghiChu;
-        $donHangInfo->idDonHang = "DH". $date;
+        $donHangInfo->idDonHang = "DH" . $date;
         $donHangInfo->save();
 
-        
+
         $data = $this->getData();
 
         $request->session()->forget('Cart');
         $listCart = Cart_model::where('idUser', '=', $request->session()->get('Login'))->get();
         $cartInfos = CartInfo::where('idCart', '=', $listCart[0]['idCart'])->get();
-        foreach($cartInfos as $cartInfo) {
+        foreach ($cartInfos as $cartInfo) {
             CartInfo::destroy($cartInfo->id);
         }
 
@@ -382,7 +393,7 @@ class DomainController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show chi tiết sản phẩm.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -396,7 +407,9 @@ class DomainController extends Controller
             $check = [];
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
-                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $temp_product = DB::table('products')
+                ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+                ->where('id', '=', $info->idProduct)->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -406,8 +419,16 @@ class DomainController extends Controller
             $data['check'] = $check;
         }
 
-        $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $id)->select('*')->get();
-        $productRelate = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products_photos.photo_feature', '=', 1)->where('type_id', '=', $product[0]->type_id)->get();
+        $product = DB::table('products')
+        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->where('id', '=', $id)->select('*')->get();
+
+        $productRelate = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->where('products_photos.photo_feature', '=', 1)
+        ->where('type_id', '=', $product[0]->type_id)->get();
+        
         $data['product'] = $product;
         $data['productRelate'] = $productRelate;
 
@@ -454,7 +475,11 @@ class DomainController extends Controller
     public function getSearch(Request $req)
     {
         $key = $req->key;
-        $product = Product::where('name', 'like', '%' . $key . '%')
+        $product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where([
+                ['products_photos.photo_feature', '=', 1],
+                ['name', 'like', '%' . $key . '%'],
+            ])
             ->orWhere('price', '=', $key)
             ->get()->toArray();
 
@@ -464,6 +489,14 @@ class DomainController extends Controller
         return view('pages.search', ['data' => $data]);
     }
 
+    public function showDonHang(Request $req) {
+        $data = $this->getData();
+        $data['listOrder'] = DB::table('donhang')->join('status', 'status', '=', 'status.status_id')
+        ->where('idUser', $req->session()->get('Login'))->get();
+        
+        return view('pages.listOrder', ['data' => $data]);
+    }
+
     /**
      *  Show loại sản phẩm
      */
@@ -471,7 +504,12 @@ class DomainController extends Controller
     public function showProtype($id)
     {
         $data = $this->getDaTa();
-        $product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products_photos.photo_feature', '=', 1)->where('type_id', '=', $id)->select('*')->get();
+        $product = DB::table('products')
+        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+        ->where('products_photos.photo_feature', '=', 1)
+        ->where('type_id', '=', $id)
+        ->select('*')
+        ->get();
         $protype = Protype::where('type_id', '=', $id)->get();
         $data['product'] = $product;
         return view('pages.classifiProduct', compact('protype'), ['data' => $data]);

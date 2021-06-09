@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th6 01, 2021 lúc 06:07 PM
+-- Thời gian đã tạo: Th6 09, 2021 lúc 06:18 AM
 -- Phiên bản máy phục vụ: 5.7.31
 -- Phiên bản PHP: 7.3.21
 
@@ -33,16 +33,18 @@ CREATE TABLE IF NOT EXISTS `cart` (
   `totalQuantity` int(11) NOT NULL,
   `totalPrice` int(11) NOT NULL,
   `idUser` int(11) NOT NULL,
-  PRIMARY KEY (`idCart`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`idCart`),
+  KEY `idUser` (`idUser`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `cart`
 --
 
 INSERT INTO `cart` (`idCart`, `totalQuantity`, `totalPrice`, `idUser`) VALUES
-(27, 6, 769850, 24),
-(28, 4, 832000, 25);
+(27, 2, 270000, 24),
+(28, 5, 1236000, 25),
+(30, 0, 0, 29);
 
 -- --------------------------------------------------------
 
@@ -56,17 +58,19 @@ CREATE TABLE IF NOT EXISTS `cartinfo` (
   `quantity` int(10) NOT NULL,
   `idProduct` int(10) NOT NULL,
   `idCart` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `idProduct` (`idProduct`,`idCart`),
+  KEY `idCart` (`idCart`)
+) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `cartinfo`
 --
 
 INSERT INTO `cartinfo` (`id`, `quantity`, `idProduct`, `idCart`) VALUES
-(78, 1, 3, 27),
-(77, 3, 2, 27),
-(79, 1, 15, 27);
+(149, 2, 16, 28),
+(150, 2, 18, 28),
+(154, 1, 20, 28);
 
 -- --------------------------------------------------------
 
@@ -81,8 +85,21 @@ CREATE TABLE IF NOT EXISTS `chitietdonhang` (
   `idSP` int(11) NOT NULL,
   `soluong` int(11) NOT NULL,
   `thanhtien` decimal(10,0) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `idDonHang` (`idDonHang`,`idSP`),
+  KEY `idSP` (`idSP`)
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `chitietdonhang`
+--
+
+INSERT INTO `chitietdonhang` (`id`, `idDonHang`, `idSP`, `soluong`, `thanhtien`) VALUES
+(41, 'DH07062021044632', 16, 1, '300000'),
+(42, 'DH07062021044632', 20, 1, '220000'),
+(43, 'DH07062021044632', 18, 1, '208000'),
+(44, 'DH07062021063827', 20, 1, '220000'),
+(45, 'DH07062021063827', 1, 1, '50000');
 
 -- --------------------------------------------------------
 
@@ -93,12 +110,40 @@ CREATE TABLE IF NOT EXISTS `chitietdonhang` (
 DROP TABLE IF EXISTS `comment`;
 CREATE TABLE IF NOT EXISTS `comment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `idUser` int(11) NOT NULL,
   `idSP` int(11) NOT NULL,
   `comment` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idUser` (`idUser`),
+  KEY `idSP` (`idSP`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `contact`
+--
+
+DROP TABLE IF EXISTS `contact`;
+CREATE TABLE IF NOT EXISTS `contact` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hoten` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sdt` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tieude` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `noidung` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `seen` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `contact`
+--
+
+INSERT INTO `contact` (`id`, `hoten`, `sdt`, `email`, `tieude`, `noidung`, `seen`) VALUES
+(1, 'Quách Trần Thanh Tuyền', '0111259494', 'tuyen@gmail.com', 'Trang web nhiều tính năng quá!', 'Quá nhiều lỗi... Mệt', 0),
+(2, 'Lương Văn Thanh', '0111259494', 'tuyennhu12@gmail.com', 'Test chức năng', 'hihi', 0);
 
 -- --------------------------------------------------------
 
@@ -108,14 +153,50 @@ CREATE TABLE IF NOT EXISTS `comment` (
 
 DROP TABLE IF EXISTS `donhang`;
 CREATE TABLE IF NOT EXISTS `donhang` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `idDonHang` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `idTTNH` int(11) NOT NULL,
-  `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tongtien` decimal(10,0) NOT NULL,
+  `id` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `totalQuantity` int(11) NOT NULL,
+  `totalPrice` decimal(10,0) NOT NULL,
+  `status` int(11) NOT NULL,
+  `idUser` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=86 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `idUser` (`idUser`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `donhang`
+--
+
+INSERT INTO `donhang` (`id`, `totalQuantity`, `totalPrice`, `status`, `idUser`, `created_at`) VALUES
+('DH07062021044632', 3, '728000', 1, 24, '2021-06-06 21:46:32'),
+('DH07062021063827', 2, '270000', 1, 24, '2021-06-06 23:38:27');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `donhanginfo`
+--
+
+DROP TABLE IF EXISTS `donhanginfo`;
+CREATE TABLE IF NOT EXISTS `donhanginfo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hoten` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `diachi` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sdt` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ghichu` text COLLATE utf8mb4_unicode_ci,
+  `idDonHang` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idDonHang` (`idDonHang`)
+) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `donhanginfo`
+--
+
+INSERT INTO `donhanginfo` (`id`, `hoten`, `diachi`, `sdt`, `ghichu`, `idDonHang`) VALUES
+(91, 'Lê Nguyễn Đức Danh', 'Quận Thủ Đức', '0111259494', NULL, 'DH07062021044632'),
+(92, 'Lê Nguyễn Đức Danh', 'Quận Thủ Đức', '0111259494', NULL, 'DH07062021063827');
 
 -- --------------------------------------------------------
 
@@ -127,8 +208,9 @@ DROP TABLE IF EXISTS `favourite`;
 CREATE TABLE IF NOT EXISTS `favourite` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idUser` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `idUser` (`idUser`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `favourite`
@@ -136,7 +218,8 @@ CREATE TABLE IF NOT EXISTS `favourite` (
 
 INSERT INTO `favourite` (`id`, `idUser`) VALUES
 (1, 24),
-(2, 25);
+(2, 25),
+(4, 29);
 
 -- --------------------------------------------------------
 
@@ -149,8 +232,10 @@ CREATE TABLE IF NOT EXISTS `favouriteinfo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `idFavourite` int(11) NOT NULL,
   `idProduct` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=259 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `idFavourite` (`idFavourite`,`idProduct`),
+  KEY `idProduct` (`idProduct`)
+) ENGINE=InnoDB AUTO_INCREMENT=273 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `favouriteinfo`
@@ -158,7 +243,9 @@ CREATE TABLE IF NOT EXISTS `favouriteinfo` (
 
 INSERT INTO `favouriteinfo` (`id`, `idFavourite`, `idProduct`) VALUES
 (225, 1, 1),
-(228, 1, 20);
+(228, 1, 20),
+(272, 2, 8),
+(271, 2, 9);
 
 -- --------------------------------------------------------
 
@@ -180,18 +267,19 @@ CREATE TABLE IF NOT EXISTS `products` (
   `amount` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `type_id` (`type_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `products`
 --
 
 INSERT INTO `products` (`id`, `name`, `price`, `description`, `information`, `type_id`, `weight`, `feature`, `sale`, `amount`, `created_at`, `updated_at`) VALUES
+(1, 'CÀ CHUA BEEF', '50000', 'Hạt giống cà chua số một của Rijk Zwaan đến từ Hà Lan. Rau được trồng bằng phương pháp hữu cơ hoàn toàn.', 'Cà chua beef hướng hữu cơ là giống cà chua cao cấp khác hẳn cà chua thông thường ở điểm quả cà chua to, chắc, ít hạt, cơm dày.  Cà chua beef cung cấp một lượng Vitamin A, C, K tuyệt vời. Những chất này có tác dụng giúp tăng cường thị lực, phòng bệnh quáng gà. Ngoài ra, cà chua beef hữu cơ còn là loại thực phẩm giúp kiểm soát lượng đường trong máu, có canxi hỗ trợ cho xương chắc khỏe. Cà chua là loại thực phẩm được sử dụng phổ biến trong mỗi bữa ăn cũng như trong làm đẹp của chị em phụ nữ. Tuy nhiên để đảm bảo an toàn thì chúng ta nên chọn cà chua beef hướng hữu cơ hoặc cà chua bi hướng hữu cơ.', 2, 0.5, 1, 0, 0, '2021-05-23 17:00:00', '2021-05-24 11:11:20'),
 (2, 'BẮP CẢI TÍM', '44950', 'Bắp cải màu tím đậm rất giàu anthocyanin polyphenols (chất chống oxy hóa, các tính năng kháng viêm khác nhau), bổ dưỡng hơn so với bắp cải xanh. Một số nghiên cứu cho rằng, anthocyanin có thể giúp giảm nguy cơ tim mạch, tiểu đường và một số bệnh ung thư. Nhờ giàu chất chống oxy hóa, bắp cải tím còn giúp làn da bạn mềm mại và sáng hơn.', 'Bắp cải tím chứa một hàm lượng Vitamin A GẤP 10 LẦN Bắp cải xanh, hoạt động như một chất chống oxy hóa hỗ trợ mắt, giữ cho da và hệ miễn dịch luôn khỏe mạnh.\r\n\r\nTrong khi chứa hàm lượng vitamin A gấp 10 lần bắp cải xanh thì hàm lượng vitamin C trong bắp cải tím cũng gấp 1.5 lần bắp cải xanh, vitamin C là một loại vitamin tăng cường đề kháng,  kích hoạt chuỗi hệ phản ứng miễn dịch trong cơ thể và sửa chữa các vết thương mau lành.\r\n\r\nCải tím chứa hàm lượng vitamin K gấp hai lần bắp cải xanh và hàng loạt những dưỡng chất tốt cho cơ thể như thiamin, folate, canxi, magiê, mangan, fe – sắt, riboflavin, sắt, kali, vitamin E, và vitamin B sẽ mang lại rất nhiều công dụng khác nhau như sức khỏe – có thể kể đến như liều thuốc chống viêm cực mạnh, trong khi sắt sẽ là điển hình trong việc ngừa các tình trạng thiếu máu dẫn đến mệt mỏi.', 2, 0.5, 1, 20, 500, '2020-12-24 17:00:00', '2021-05-24 14:13:34'),
 (3, 'THĂN NGOẠI BÒ ÚC STRIPLOIN', '145000', 'Giá sản phẩm đã bao gồm chi phí cắt lát và đóng gói! Trong tất cả những loại thịt bò, thì thăn ngoại bò Úc Striploin được người tiêu dùng đánh giá là loại thịt bò có chất lượng và giá trị dinh dưỡng cao nhất.', 'Striploin hay còn gọi là thăn lưng, thăn ngoại bò Úc, đây là phần thịt nằm ở trên lưng của con bò, phía dọc hai bên xương sống phía sau, là nơi bò ít vận động nhất. Từ vị trí có thể cho thấy đây là phần thịt mềm, và ở phần thịt này có một lớp mỡ bao quanh, là loại thịt được dùng để chế biến nhiều món ăn với thực đơn cao cấp. Ví như những món Steak, nướng, lẩu, xào hoặc áp chảo…. Và điển hình là món bò bít tết nổi tiếng.', 1, 0.5, 1, 50, 0, '2020-12-24 17:00:00', '2021-05-24 14:07:14'),
 (4, 'BẮP HOA BÒ MỸ HEEL MUSCLE BEEF', '175000', 'Bò Mỹ không những chất lượng an toàn cho sức khỏe mà còn có một vị ngon đặc biệt đến khó cưỡng, nhất là những phần thịt ở bắp hoa bò Mỹ, phần thịt này luôn mang đến cho người ăn một cảm giác giòn, mềm và ngọt khiến thực khách vẫn muốn thưởng thức  cho tới tận miếng cuối cùng.', 'Không có mỡ nên ăn hoài “không ngán”. Thay vào đó đan xen những đường gân mỏng tạo cho thực khách cảm giác thích thú khi nhai: “vừa mềm lại giòn sần sật. Có vị ngọt tự nhiên và mùi thơm nhẹ rất đặc trưng. Chế biến được nhiều món ngon trong gia đình Việt: hầm, xào, nướng, đặc biệt là nhúng dấm, lẩu.', 1, 0.5, 0, 0, 0, '2020-12-24 17:00:00', '2021-05-24 14:07:25'),
-(1, 'CÀ CHUA BEEF', '50000', 'Hạt giống cà chua số một của Rijk Zwaan đến từ Hà Lan. Rau được trồng bằng phương pháp hữu cơ hoàn toàn.', 'Cà chua beef hướng hữu cơ là giống cà chua cao cấp khác hẳn cà chua thông thường ở điểm quả cà chua to, chắc, ít hạt, cơm dày.  Cà chua beef cung cấp một lượng Vitamin A, C, K tuyệt vời. Những chất này có tác dụng giúp tăng cường thị lực, phòng bệnh quáng gà. Ngoài ra, cà chua beef hữu cơ còn là loại thực phẩm giúp kiểm soát lượng đường trong máu, có canxi hỗ trợ cho xương chắc khỏe. Cà chua là loại thực phẩm được sử dụng phổ biến trong mỗi bữa ăn cũng như trong làm đẹp của chị em phụ nữ. Tuy nhiên để đảm bảo an toàn thì chúng ta nên chọn cà chua beef hướng hữu cơ hoặc cà chua bi hướng hữu cơ.', 2, 0.5, 1, 0, 0, '2021-05-23 17:00:00', '2021-05-24 11:11:20'),
 (5, 'CÀ RỐT BABY', '98000', 'Cà rốt là loại cây có củ, củ to ở phần đầu và nhọn ở phần đuôi, củ cà rốt thường có màu cam hoặc đỏ, phẩn ăn được thường gọi là củ nhưng thực chất đó là phần rễ của cà rốt.', 'Cà rốt chứa rất nhiều vitamin A, B, C đặc biệt là hàm lượng vitamin A cao rất tốt cho mắt, giúp tăng cường thị lực, bồ bổi thị lực, các vitamin này còn giúp chuyển hóa và tái tạo da, tăng sức đề kháng, phòng và trị các bệnh, giúp bổ tỳ tiêu thực, nhuận tràng, bổ can minh mục, thanh nhiệt giải độc. Thường dùng để dưỡng da, trị chứng da khô, trứng cá đầu đen, mụn nhọt...', 2, 0.4, 1, 0, 0, '2021-01-01 17:00:00', '2021-05-24 14:07:58'),
 (6, 'BÔNG CẢI XANH', '33000', 'Bông cải xanh hoặc súp lơ xanh, là một loại cây thuộc họ cải, có hoa lớn ở đầu, thường được dùng như rau. Bông cải xanh thường được chế biến bằng cách luộc hoặc hấp, nhưng cũng có thể được ăn sống như là rau sống trong những đĩa đồ nguội khai vị.', 'Có rất nhiều món ăn được chế biến từ bông cải xanh chẳng hạn như pasta với bông cải xanh, súp bông cải xanh, bông cải xanh xào tôm. Ta có bông cải xanh trộn dầu hàu, một món ăn giàu đạm và rất ngon hay gà xào bông cải xanh món ăn âm dương kết hợp hài hòa. Ngoài ra bông cải xanh được dùng để làm các món salad, xào thịt, xào hải sản, giúp món ăn hạ bớt lượng nhiệt từ dầu mỡ, thịt, đảm bảo hài hòa, cân bằng cho bữa ăn', 2, 0.3, 0, 0, 0, '2021-01-01 17:00:00', '2021-05-24 14:08:29'),
 (7, 'BÔNG ATISO', '153000', 'Atisô là cây thảo lớn, cao 1 - 1,2m, có thể đến 2m. Thân ngắn, thẳng và cứng, có khía dọc, phủ lông trắng như bông. Lá to, dài, mọc so le; phiến lá xẻ thùy sâu và có răng không đều, mặt trên xanh lục mặt dưới có lông trắng, cuống lá to và ngắn. Cụm hoa hình đầu, to, mọc ở ngọn, màu đỏ tím hoặc tím lơ nhạt, lá bắc ngoài của cụm hoa rộng, dày và nhọn, đế cụm hoa nạc phủ đầy lông tơ, mang toàn hoa hình ống.Quả nhẵn bóng, màu nâu sẫm có mào lông trắng.', 'Atisô là một trong những nguyên liệu bổ dưỡng trong các món canh hay món thịt nhồi. Về các món canh, ta có: canh hoa atisô nấu sườn, canh hoa atisô hầm chân giò, canh hoa atisô tiềm thịt gà. Đối với các món nhồi thịt hay hấp, ta có: atisô hấp thịt, thịt nhồi atisô. Ngoài ra, atisô còn được dùng để làm trà atisô một loại trà thơm ngon, nổi tiếng.', 2, 0.3, 0, 0, 0, '2021-01-01 17:00:00', '2021-05-24 14:08:41'),
@@ -223,47 +311,47 @@ INSERT INTO `products` (`id`, `name`, `price`, `description`, `information`, `ty
 DROP TABLE IF EXISTS `products_photos`;
 CREATE TABLE IF NOT EXISTS `products_photos` (
   `photo_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `product_id` int(10) UNSIGNED NOT NULL,
+  `product_id` int(11) NOT NULL,
   `filename` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `photo_feature` int(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`photo_id`),
   KEY `products_photos_product_id_foreign` (`product_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `products_photos`
 --
 
 INSERT INTO `products_photos` (`photo_id`, `product_id`, `filename`, `photo_feature`, `created_at`, `updated_at`) VALUES
-(112, 25, 'bo-dau-phong-dua.jpg', 1, '2021-05-24 14:13:01', '2021-05-24 14:13:01'),
-(111, 24, 'bo-dau-phong-cacao.jpg', 1, '2021-05-24 14:12:52', '2021-05-24 14:12:52'),
-(110, 23, 'trung-vit-omega-3.jpg', 1, '2021-05-24 14:12:43', '2021-05-24 14:12:43'),
-(109, 22, 'trung-ga-ta.jpg', 1, '2021-05-24 14:12:21', '2021-05-24 14:12:21'),
-(108, 21, 'bo-huu-co-ghee.jpg', 1, '2021-05-24 14:12:04', '2021-05-24 14:12:04'),
-(107, 20, 'ca-dia-bong-phu-quoc.jpg', 1, '2021-05-24 14:11:47', '2021-05-24 14:11:47'),
-(106, 19, 'ca-be-lao-phu-quoc.jpg', 1, '2021-05-24 14:11:29', '2021-05-24 14:11:29'),
-(105, 18, 'muc-ong-phu-quoc.jpg', 1, '2021-05-24 14:11:12', '2021-05-24 14:11:12'),
-(104, 17, 'ngheu-sinh-thai.jpg', 1, '2021-05-24 14:10:57', '2021-05-24 14:10:57'),
-(103, 16, 'tom-he.jpg', 1, '2021-05-24 14:10:36', '2021-05-24 14:10:36'),
-(94, 7, 'bong-atiso.jpg', 1, '2021-05-24 14:08:41', '2021-05-24 14:08:41'),
-(95, 8, 'thit-nam-bo-uc.jpg', 1, '2021-05-24 14:08:57', '2021-05-24 14:08:57'),
+(86, 2, 'bap-cai-tim.jpg', 1, '2021-05-24 14:07:01', '2021-05-24 14:07:01'),
+(87, 2, 'bap-cai-tim-1.jpg', 0, '2021-05-24 14:07:01', '2021-05-24 14:07:01'),
+(88, 2, 'bap-cai-tim-2.jpg', 0, '2021-05-24 14:07:01', '2021-05-25 02:21:11'),
+(89, 3, 'than-ngoai-bo-uc.jpg', 1, '2021-05-24 14:07:14', '2021-05-24 14:07:14'),
 (90, 4, 'bap-hoa-bo-my.jpg', 1, '2021-05-24 14:07:25', '2021-05-24 14:07:25'),
-(102, 15, 'dau-giong-new-zealand.jpg', 1, '2021-05-24 14:10:19', '2021-05-24 14:10:19'),
-(101, 14, 'cherry-new-zealand.jpg', 1, '2021-05-24 14:10:10', '2021-05-24 14:10:10'),
-(100, 13, 'dua-luoi-ruot-xanh.jpg', 1, '2021-05-24 14:10:01', '2021-05-24 14:10:01'),
-(99, 12, 'hanh-nhan.jpg', 1, '2021-05-24 14:09:48', '2021-05-24 14:09:48'),
-(98, 11, 'dau-do.jpg', 1, '2021-05-24 14:09:38', '2021-05-24 14:09:38'),
-(97, 10, 'thit-than-bit-tet-bo-uc.jpg', 1, '2021-05-24 14:09:19', '2021-05-24 14:09:19'),
-(96, 9, 'thit-dui-bo-uc.jpg', 1, '2021-05-24 14:09:09', '2021-05-24 14:09:09'),
-(93, 6, 'bong-cai-xanh.jpg', 1, '2021-05-24 14:08:29', '2021-05-24 14:08:29'),
 (91, 1, 'ca-chua-beef.jpg', 1, '2021-05-24 14:07:47', '2021-05-24 14:07:47'),
 (92, 5, 'ca-rot-baby.jpg', 1, '2021-05-24 14:07:58', '2021-05-24 14:07:58'),
-(89, 3, 'than-ngoai-bo-uc.jpg', 1, '2021-05-24 14:07:14', '2021-05-24 14:07:14'),
-(88, 2, 'bap-cai-tim-2.jpg', 0, '2021-05-24 14:07:01', '2021-05-25 02:21:11'),
-(87, 2, 'bap-cai-tim-1.jpg', 0, '2021-05-24 14:07:01', '2021-05-24 14:07:01'),
-(86, 2, 'bap-cai-tim.jpg', 1, '2021-05-24 14:07:01', '2021-05-24 14:07:01');
+(93, 6, 'bong-cai-xanh.jpg', 1, '2021-05-24 14:08:29', '2021-05-24 14:08:29'),
+(94, 7, 'bong-atiso.jpg', 1, '2021-05-24 14:08:41', '2021-05-24 14:08:41'),
+(95, 8, 'thit-nam-bo-uc.jpg', 1, '2021-05-24 14:08:57', '2021-05-24 14:08:57'),
+(96, 9, 'thit-dui-bo-uc.jpg', 1, '2021-05-24 14:09:09', '2021-05-24 14:09:09'),
+(97, 10, 'thit-than-bit-tet-bo-uc.jpg', 1, '2021-05-24 14:09:19', '2021-05-24 14:09:19'),
+(98, 11, 'dau-do.jpg', 1, '2021-05-24 14:09:38', '2021-05-24 14:09:38'),
+(99, 12, 'hanh-nhan.jpg', 1, '2021-05-24 14:09:48', '2021-05-24 14:09:48'),
+(100, 13, 'dua-luoi-ruot-xanh.jpg', 1, '2021-05-24 14:10:01', '2021-05-24 14:10:01'),
+(101, 14, 'cherry-new-zealand.jpg', 1, '2021-05-24 14:10:10', '2021-05-24 14:10:10'),
+(102, 15, 'dau-giong-new-zealand.jpg', 1, '2021-05-24 14:10:19', '2021-05-24 14:10:19'),
+(103, 16, 'tom-he.jpg', 1, '2021-05-24 14:10:36', '2021-05-24 14:10:36'),
+(104, 17, 'ngheu-sinh-thai.jpg', 1, '2021-05-24 14:10:57', '2021-05-24 14:10:57'),
+(105, 18, 'muc-ong-phu-quoc.jpg', 1, '2021-05-24 14:11:12', '2021-05-24 14:11:12'),
+(106, 19, 'ca-be-lao-phu-quoc.jpg', 1, '2021-05-24 14:11:29', '2021-05-24 14:11:29'),
+(107, 20, 'ca-dia-bong-phu-quoc.jpg', 1, '2021-05-24 14:11:47', '2021-05-24 14:11:47'),
+(108, 21, 'bo-huu-co-ghee.jpg', 1, '2021-05-24 14:12:04', '2021-05-24 14:12:04'),
+(109, 22, 'trung-ga-ta.jpg', 1, '2021-05-24 14:12:21', '2021-05-24 14:12:21'),
+(110, 23, 'trung-vit-omega-3.jpg', 1, '2021-05-24 14:12:43', '2021-05-24 14:12:43'),
+(111, 24, 'bo-dau-phong-cacao.jpg', 1, '2021-05-24 14:12:52', '2021-05-24 14:12:52'),
+(112, 25, 'bo-dau-phong-dua.jpg', 1, '2021-05-24 14:13:01', '2021-05-24 14:13:01');
 
 -- --------------------------------------------------------
 
@@ -277,18 +365,18 @@ CREATE TABLE IF NOT EXISTS `protypes` (
   `type_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type_img` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`type_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `protypes`
 --
 
 INSERT INTO `protypes` (`type_id`, `type_name`, `type_img`) VALUES
-(5, 'Bơ và trứng', 'bo-va-trung.jpg'),
-(4, 'Hải sản', 'hai-san.jpg'),
 (1, 'Thịt tươi', 'thit-tuoi.jpg'),
 (2, 'Rau củ', 'rau-cu.jpg'),
-(3, 'Trái cây và hạt', 'trai-cay-va-hat.jpg');
+(3, 'Trái cây và hạt', 'trai-cay-va-hat.jpg'),
+(4, 'Hải sản', 'hai-san.jpg'),
+(5, 'Bơ và trứng', 'bo-va-trung.jpg');
 
 -- --------------------------------------------------------
 
@@ -301,7 +389,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `role_id` int(11) NOT NULL AUTO_INCREMENT,
   `role_name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `roles`
@@ -309,51 +397,31 @@ CREATE TABLE IF NOT EXISTS `roles` (
 
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
 (1, 'admin'),
-(2, 'user');
+(2, 'user'),
+(3, 'super');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `thongtinnhanhang`
+-- Cấu trúc bảng cho bảng `status`
 --
 
-DROP TABLE IF EXISTS `thongtinnhanhang`;
-CREATE TABLE IF NOT EXISTS `thongtinnhanhang` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `hoten` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `diachi` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sdt` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ghichu` text COLLATE utf8mb4_unicode_ci,
-  `username` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `status`;
+CREATE TABLE IF NOT EXISTS `status` (
+  `status_id` int(11) NOT NULL AUTO_INCREMENT,
+  `status_title` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`status_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Cấu trúc bảng cho bảng `user`
+-- Đang đổ dữ liệu cho bảng `status`
 --
 
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `user`
---
-
-INSERT INTO `user` (`id`, `username`, `password`, `email`, `role_id`, `created_at`) VALUES
-(2, 'admin', 'e10adc3949ba59abbe56e057f20f883e', '', 1, '2020-12-31 03:55:00'),
-(20, 'user1', 'e10adc3949ba59abbe56e057f20f883e', 'user1@gmail.com', 2, '2020-12-31 03:57:10'),
-(23, 'tenladanh12@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 'tenladanh12@gmail.com', 1, '2021-05-11 02:13:48');
+INSERT INTO `status` (`status_id`, `status_title`) VALUES
+(1, 'Đang xử lý'),
+(2, 'Đã xác nhận'),
+(3, 'Đang yêu cầu huỷ'),
+(4, 'Đã huỷ');
 
 -- --------------------------------------------------------
 
@@ -367,19 +435,98 @@ CREATE TABLE IF NOT EXISTS `users` (
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role_id` int(11) NOT NULL DEFAULT '1',
+  `role_id` int(11) NOT NULL DEFAULT '2',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  KEY `role_id` (`role_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `password`, `email`, `role_id`, `updated_at`, `created_at`) VALUES
-(25, 'tuyen', '$2y$10$J4AqyBnWhoWOw4fmX0pXI.bjRFAg4K9d.wMzOnA2VcvtCv9vhLoEC', 'tuyen@gmail.com', 1, '2021-05-26 04:14:31', '2021-05-26 04:14:31'),
-(24, 'danh', '$2y$10$5h4xaRrgUkPM5jw3L4QlROottLgeGWjQM8ehw2hEm3UY26nDLm6Oy', 'danh@gmail.com', 2, '2021-05-25 10:02:37', '2021-05-25 10:02:37');
+(24, 'danh', '$2y$10$5h4xaRrgUkPM5jw3L4QlROottLgeGWjQM8ehw2hEm3UY26nDLm6Oy', 'danh@gmail.com', 2, '2021-05-25 10:02:37', '2021-05-25 10:02:37'),
+(25, 'tuyen', '$2y$10$J4AqyBnWhoWOw4fmX0pXI.bjRFAg4K9d.wMzOnA2VcvtCv9vhLoEC', 'tuyen@gmail.com', 2, '2021-05-26 04:14:31', '2021-05-26 04:14:31'),
+(27, 'admin', 'admin', '', 1, '2021-06-07 00:35:16', '2021-06-07 00:35:16'),
+(28, 'super', 'super', '', 3, '2021-06-09 02:16:05', '2021-06-09 02:16:05'),
+(29, 'Test 1', '$2y$10$.5du8vkr7fJZwKNxnUGLWO8K8TSFqxbrAAv3i07QDKkEhBCtarDU6', 'tuyennhu12@gmail.com', 2, '2021-06-08 21:23:34', '2021-06-08 21:23:34');
+
+--
+-- Các ràng buộc cho các bảng đã đổ
+--
+
+--
+-- Các ràng buộc cho bảng `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`id`);
+
+--
+-- Các ràng buộc cho bảng `cartinfo`
+--
+ALTER TABLE `cartinfo`
+  ADD CONSTRAINT `cartinfo_ibfk_1` FOREIGN KEY (`idCart`) REFERENCES `cart` (`idCart`),
+  ADD CONSTRAINT `cartinfo_ibfk_2` FOREIGN KEY (`idProduct`) REFERENCES `products` (`id`);
+
+--
+-- Các ràng buộc cho bảng `chitietdonhang`
+--
+ALTER TABLE `chitietdonhang`
+  ADD CONSTRAINT `chitietdonhang_ibfk_1` FOREIGN KEY (`idDonHang`) REFERENCES `donhang` (`id`),
+  ADD CONSTRAINT `chitietdonhang_ibfk_2` FOREIGN KEY (`idSP`) REFERENCES `products` (`id`);
+
+--
+-- Các ràng buộc cho bảng `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`idSP`) REFERENCES `products` (`id`);
+
+--
+-- Các ràng buộc cho bảng `donhang`
+--
+ALTER TABLE `donhang`
+  ADD CONSTRAINT `donhang_ibfk_1` FOREIGN KEY (`status`) REFERENCES `status` (`status_id`),
+  ADD CONSTRAINT `donhang_ibfk_2` FOREIGN KEY (`idUser`) REFERENCES `users` (`id`);
+
+--
+-- Các ràng buộc cho bảng `donhanginfo`
+--
+ALTER TABLE `donhanginfo`
+  ADD CONSTRAINT `donhanginfo_ibfk_1` FOREIGN KEY (`idDonHang`) REFERENCES `donhang` (`id`);
+
+--
+-- Các ràng buộc cho bảng `favourite`
+--
+ALTER TABLE `favourite`
+  ADD CONSTRAINT `favourite_ibfk_1` FOREIGN KEY (`idUser`) REFERENCES `users` (`id`);
+
+--
+-- Các ràng buộc cho bảng `favouriteinfo`
+--
+ALTER TABLE `favouriteinfo`
+  ADD CONSTRAINT `favouriteinfo_ibfk_1` FOREIGN KEY (`idFavourite`) REFERENCES `favourite` (`id`),
+  ADD CONSTRAINT `favouriteinfo_ibfk_2` FOREIGN KEY (`idProduct`) REFERENCES `products` (`id`);
+
+--
+-- Các ràng buộc cho bảng `products`
+--
+ALTER TABLE `products`
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `protypes` (`type_id`);
+
+--
+-- Các ràng buộc cho bảng `products_photos`
+--
+ALTER TABLE `products_photos`
+  ADD CONSTRAINT `products_photos_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`);
+
+--
+-- Các ràng buộc cho bảng `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
