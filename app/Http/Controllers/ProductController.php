@@ -6,6 +6,7 @@ use App\Http\Controllers\Redirect;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Product;
+use App\Comment;
 use App\ProductsPhotos;
 
 class ProductController extends Controller
@@ -148,9 +149,13 @@ class ProductController extends Controller
     public function show($id)
     {
         $data = $this->getDaTa();
-        $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->where('products.id', '=', $id)->get();
+        $product = DB::table('products')
+        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+        ->where('products.id', '=', $id)->get();
+
         $photos = ProductsPhotos::where('product_id', '=', $id)->get();
         $data['product1'] = $product;
+        
         return view('admin.pages.edit-product', compact('photos'), ['data' => $data]);
     }
 
@@ -209,7 +214,7 @@ class ProductController extends Controller
                 $checkFeature = false;
                 foreach ($data['productPhotos'] as $photo) {
                     if ($photo->product_id == $id && $photo->photo_feature == 1) {
-                        $productPhotoFeauture = ProductsPhotos::find($photo->id);
+                        $productPhotoFeauture = ProductsPhotos::find($photo->photo_id);
                         $productPhotoFeauture->filename = $request->fileInput->getClientOriginalName();
                         $productPhotoFeauture->save();
 
@@ -307,18 +312,26 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $data = $this->getDaTa();
-        foreach ($data['product'] as $product) {
-            if (isset($product->id)) {
-                Product::destroy($id);
-            }
-        }
         $productPhoto = ProductsPhotos::where('product_id', '=', $id)->get();
+        $productComment = Comment::where('idSP', '=', $id)->get();
         if (count($productPhoto) > 0) {
             foreach ($productPhoto as $photo) {
                 ProductsPhotos::destroy($photo->photo_id);
             }
         }
 
+        if (count($productComment) > 0) {
+            foreach ($productComment as $comm) {
+                Comment::destroy($comm->id);
+            }
+        }
+
+        foreach ($data['product'] as $product) {
+            if (isset($product->id)) {
+                Product::destroy($id);
+            }
+        }
+        
         $product = DB::table('products')->join('protypes', 'products.type_id', '=', 'protypes.type_id')->orderByDesc('products.id', 'desc')->get();
         $photos = DB::table('products_photos')->get();
 

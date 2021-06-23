@@ -3843,3 +3843,71 @@ ul, ol {
     font-size: 15px;
     color: #b2b2b2;
 }
+
+.info-comment ul {
+    display: flex;
+    list-style: none;
+    justify-content: flex-end;
+}
+
+.info-comment  p {
+    font-size: 12px;
+    color: #000;
+    font-weight: bold;
+}
+
+.info-comment ul li {
+    padding-left: 10px;
+    font-size: 12px;
+    padding-top: 5px;
+    color: #6c757d;
+}
+
+.fa-mail-reply:before, .fa-reply:before {
+    content: "\f3e5";
+}
+
+.list-comment {
+    margin-top: 15px;
+    background: #f8f9fa;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.list-comment img {
+    margin: 13px auto;
+    display: block;
+}
+
+.content-comment #reply{
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #7fad39;
+    border-color: #7fad39;
+}
+
+.profile-tittle {
+    color: #7fad39;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.profile-tittle-1 {
+    color: #7fad39;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.card-body {
+    width: auto;
+}
+
+.profile-content {
+    padding-bottom: 30px;
+    justify-content: center;
+}

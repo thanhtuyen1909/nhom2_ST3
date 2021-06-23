@@ -17,4 +17,8 @@ class Product extends Model
      public function linkComment(){
         return $this->hasMany('App\Comment', 'idSP', 'id');
     }
+    public function linkDHINfo(){
+        return $this->hasMany('App\DonHangInfo','id','id');
+    }
+
 }

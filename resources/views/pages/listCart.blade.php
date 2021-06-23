@@ -18,7 +18,7 @@
                     <h5><a href="{{URL::to('/')}}/shop-details/{{$item['productInfo']->id}}">{{$item['productInfo']->name}}</a></h5>
                 </td>
                 <td class="shoping__cart__price">
-                    {{number_format($item['productInfo']->price)}} VND
+                {{number_format($item['productInfo']->price *(100-$item['productInfo']->sale)/100)}} VND
                 </td>
                 <td class="shoping__cart__quantity">
                     <div class="quantity">
@@ -30,7 +30,7 @@
                     </div>
                 </td>
                 <td class="shoping__cart__total">
-                    {{number_format($item['productInfo']->price*$item['quantity'])}} VND
+                {{number_format($item['productInfo']->price *(100-$item['productInfo']->sale)/100*$item['quantity'])}} VND
                 </td>
                 <td class="shoping__cart__item__close">
                     <span onclick="DeleteItemListCart(<?= $item['productInfo']->id ?>)" class="fa fa-times"></span>

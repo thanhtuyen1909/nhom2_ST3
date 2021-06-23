@@ -41,7 +41,7 @@
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
                   <label for="created_at">Ngày nhập
                   </label>
-                  <input readonly id="created_at" name="created_at" type="text" value="{{date('d-m-Y', strtotime($data['product1'][0]->created_at))}}" class="form-control validate" data-large-mode="true" />
+                  <input readonly id="created_at" name="created_at" style="background-color: #54657d;" type="text" value="{{date('d-m-Y', strtotime($data['product1'][0]->created_at))}}" class="form-control validate" data-large-mode="true" />
                 </div>
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
                   <label for="weight">Cân nặng

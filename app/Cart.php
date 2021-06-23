@@ -16,7 +16,7 @@ class Cart{
     }
     
     public function AddCart($product,$id,$quantity){
-        $newProduct = ['quantity'=>0,'price'=>$product->price   ,'productInfo' => $product];
+        $newProduct = ['quantity'=>0,'price'=>$product->price * (100-$product->sale)/100  ,'productInfo' => $product];
         if($this->product){
             if(array_key_exists($id,$this->product))
             {
@@ -24,9 +24,9 @@ class Cart{
             }
         }
         $newProduct['quantity'] +=$quantity;
-        $newProduct['price'] += $newProduct['quantity'] * $product->price;
+        $newProduct['price'] += $newProduct['quantity'] * $product->price* (100-$product->sale)/100  ;
         $this->product[$id] = $newProduct;
-        $this->totalPrice += $product->price *$quantity;
+        $this->totalPrice += $product->price* (100-$product->sale)/100 *$quantity;
         $this->totalQuantity+=$quantity;
     }
 

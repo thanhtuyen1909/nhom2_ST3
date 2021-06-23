@@ -8,9 +8,8 @@
   @endif
   <div class="row tm-content-row">
     <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8 tm-block-col">
-
       <div class="tm-bg-primary-dark tm-block tm-block-products">
-        <h2 class="tm-block-title">Sản phẩm</h2>
+        <h2 class="tm-block-title">Sản phẩm <span style="padding-left: 30px; font-size: 15px; color: #f5a623;">{{count($product)}} sản phẩm</span></h2>
         <div class="tm-product-table-container">
           <table class="table table-hover tm-table-small tm-product-table">
             <thead>
@@ -28,7 +27,7 @@
               @foreach($product as $item)
               <?php $check = true ?>
               <tr>
-                <th scope="row" style="padding-top: 50px;"><input type="checkbox" /></th>
+                <th scope="row" style="padding-top: 50px;"><input value="<?= $item->id ?>"  class="deleteMulti" type="checkbox" /></th>
                 @foreach($photos as $photo)
                 @if($photo->product_id == $item->id && $photo->photo_feature == 1)
                 <?php $check = false ?>
@@ -54,7 +53,7 @@
         </div>
         <!-- table container -->
         <a href="{{ url('/admin/add-product') }}" class="btn btn-primary btn-block text-uppercase mb-3">Thêm sản phẩm</a>
-        <button class="btn btn-primary btn-block text-uppercase">
+        <button onclick="deleteMulti()" class="btn btn-primary btn-block text-uppercase">
           Xoá sản phẩm được chọn
         </button>
       </div>

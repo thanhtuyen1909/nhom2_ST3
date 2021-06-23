@@ -11,6 +11,6 @@ class Role extends Model
     protected $table = 'roles';
     public $incrementing = true;
     public function linkUser(){
-        return $this->hasMany('App\User','role_id','id');
+        return $this->hasMany('App\User','role_id','role_id');
     }
 }

@@ -22,7 +22,7 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
                             <div class="tm-product-img-edit mx-auto">
-                                <img id="imgUpload" src="" alt="Product image" class="img-fluid d-block mx-auto">
+                                <img id="imgUpload" src="{{URL::to('/')}}/img/default-product.png" alt="Product image" class="img-fluid d-block mx-auto">
                             </div>
                             <div class="custom-file mt-3 mb-3">
                                 <input id="fileInput" name="fileInput" type="file" style="display:none;" onchange="readURL(this);" />

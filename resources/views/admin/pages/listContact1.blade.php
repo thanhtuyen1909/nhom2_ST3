@@ -1,9 +1,9 @@
 @foreach ($data['listContact'] as $value)
 <tr>
     @if($value->seen == 1)
-    <th scope="row"><input type="checkbox" id="checkContact" value="{{$value->id}}" checked /></th>
+    <th scope="row"><input type="checkbox" id="checkContact<?= $value->id ?>" value="{{$value->id}}" onclick="checkSeen(<?= $value->id ?>)" checked /></th>
     @else
-    <th scope="row"><input type="checkbox" id="checkContact" value="{{$value->id}}" /></th>
+    <th scope="row"><input type="checkbox" id="checkContact<?= $value->id ?>" value="{{$value->id}}" onclick="checkSeen(<?= $value->id ?>)" /></th>
     @endif
     <td>{{$value->tieude}}</td>
     <td>{{$value->noidung}}</td>

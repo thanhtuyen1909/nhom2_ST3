@@ -46,16 +46,20 @@
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="product__details__text">
-                    <h3>{{ $data['product'][0]->name }}</h3>
-                    <div class="product__details__rating">
+                    <h3 style="padding-bottom: 15px; border-bottom: 1px solid #ebebeb">{{ $data['product'][0]->name }}</h3>
+                    <!-- <div class="product__details__rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star-half-o"></i>
                         <span>(18 reviews)</span>
+                    </div> -->
+                    <div class="product__details__price">{{number_format($data['product'][0]->price*(100-$data['product'][0]->sale)/100)}} VND
+                        @if($data['product'][0]->sale > 0)
+                        <span>{{number_format($data['product'][0]->price)}} VND</span>
+                        @endif
                     </div>
-                    <div class="product__details__price">{{number_format($data['product'][0]->price*(100-$data['product'][0]->sale)/100)}} VND <span>{{number_format($data['product'][0]->price)}} VND</span></div>
                     <p>{{ $data['product'][0]->description }}</p>
                     <div class="product__details__quantity">
                         <div class="quantity">
@@ -119,6 +123,39 @@
                     </div>
                 </div>
             </div>
+            <div class="col-lg-12">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-selected="false"><strong>Bình luận</strong></a>
+                    </li>
+                </ul>
+                <div class="container-comment" style="width:50%; margin: 50px auto;">
+                    <form action="#">
+                        @csrf
+                        <input type="hidden" name="comment_product_id" value="<?= $data['product'][0]->id ?>" class="comment_product_id">
+                        <div class="bg-light p-2">
+                            <div class="d-flex flex-row align-items-start">
+                                <img class="rounded-circle" src="../img/image_sql/img_users/<?= $userIMG ?>" width="40">
+                                <textarea class="form-control ml-1 shadow-none textarea comment-content" placeholder="Nhập bình luận..."></textarea>
+                            </div>
+                            <div class="mt-2 text-right">
+                                @if(Auth::check() == true)
+                                <button class="btn btn-success btn-sm shadow-none send-comment" type="button">Gửi bình luận</button>
+                                @else
+                                <button class='btn btn-success btn-sm shadow-none' onclick="Login();" type="button">Gửi bình luận</button>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                    <form>
+                        @csrf
+                        <input type="hidden" name="comment_product_id" value="<?= $data['product'][0]->id ?>" class="comment_product_id">
+                        <div id="_comment_show">
+
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -161,7 +198,7 @@
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
 
                             @if(Session::get('Login') != null)
-                            <li><a onclick="AddCart(<?= $item->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            <li><a onclick="AddCart(<?= $item->id ?>, 1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
                             @else
                             <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
                             @endif

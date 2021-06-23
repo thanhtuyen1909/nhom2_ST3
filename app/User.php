@@ -36,7 +36,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $redirectTo = '/home';
+
     protected $table = 'users';
+    protected $primaryKey = 'id';
+
     public function linkComment(){
         return $this->hasMany('App\Comment','username','id');
     }
@@ -52,4 +57,7 @@ class User extends Authenticatable
     public function linkFavourite(){
         return $this->hasOne('App\Favourite','id','id');
     } 
+    public function linkRole(){
+        return $this->belongsTo('App\Role','role_id','role_id');
+    }
 }

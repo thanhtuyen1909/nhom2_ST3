@@ -13,4 +13,7 @@ class DonHangInfo extends Model
     public function linkUser(){
         return $this->belongsTo('App\User','idUser','id');
     }
+    public function linkProduct(){
+        return $this->belongsTo('App\Product','idSP','id');
+    }
 }

@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="shortcut icon" type="image/png" href="{{ URL::asset('img/logo.ico') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" type="text/css">
     <title>Ogani | Template</title>
 
@@ -116,7 +117,7 @@
                                 <a href="#"><i class="fa fa-pinterest-p"></i></a>
                             </div>
 
-                            @if(Auth::check()==false)
+                            @if(Auth::check() == false)
                             <div class="header__top__right__auth">
                                 <a href="{{url('login')}}"><i class="fa fa-user"></i> Login</a>
                             </div>
@@ -125,7 +126,8 @@
                                 <div class="header__top__right__language">
                                     <div><i class="fa fa-user"> {{Auth::user()->name}}</i></div>
                                     <ul style="width: 200px; left: -50px;">
-                                        <li><a href="{{url('setting')}}">Thông tin tài khoản</a></li>
+                                        <li><a href="{{route('user.profile')}}">Thông tin tài khoản</a></li>
+                                        <li><a href="{{route('user.change.password')}}">Đổi mật khẩu</a></li>
                                         <li><a href="{{url('listOrder')}}">Đơn hàng</a></li>
                                         <li><a href="{{url('logout')}}">Logout</a></li>
                                     </ul>
@@ -181,7 +183,7 @@
                                                         <td class="si-pic"><img class="img-cart" src="{{URL::to('/')}}/img/image_sql/products/<?= $item['productInfo']->filename ?>" alt=""></td>
                                                         <td class="si-text">
                                                             <div class="product-selected">
-                                                                <p>{{number_format($item['productInfo']->price)}} VND x {{$item['quantity']}}</p>
+                                                                <p>{{number_format($item['productInfo']->price*(100-$item['productInfo']->sale)/100)}} VND x {{$item['quantity']}}</p>
                                                                 <a href="{{URL::to('/')}}/shop-details/{{$item['productInfo']->id}}">
                                                                     <h6>{{$item['productInfo']->name}} </h6>
                                                                 </a>
@@ -199,6 +201,9 @@
                                             <span>total:</span>
                                             <h5>{{number_format(Session::get("Cart")->totalPrice)}} VND</h5>
                                             <input hidden id="total-quantity-cart" type="number" value="{{Session::get('Cart')->totalQuantity}}">
+                                        </div>
+                                        <div class="select-button">
+                                            <a onclick="clearCart();" class="primary-btn view-card" style="cursor:pointer">XOÁ SẠCH</a>
                                         </div>
                                     </div>
                                     @else
@@ -257,6 +262,7 @@
                                         <input hidden id="total-quantity-cart" type="number" value="0">
                                     </div>
                                     @endif
+
                                 </div>
                             </li>
                             @endif
@@ -402,6 +408,29 @@
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 
     <script type="text/javascript">
+        function clearCart() {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá sạch giỏ hàng ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/DeleteAllItemCart/",
+                            type: 'GET',
+                        }).done(function(response) {
+                            RenderCart(response);
+                            alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
+                        })
+                    },
+                    cancel: function() {
+
+                    }
+                }
+            });
+
+
+        }
+
         function AddFavourite(id) {
             $.ajax({
                 url: "{{URL::to('/')}}/addFavourite/" + id,
@@ -437,44 +466,65 @@
         }
 
         function DeleteFavourite(id) {
-            $.ajax({
-                url: "{{URL::to('/')}}/DeleteFavourite/" + id,
-                method: 'GET',
-                dataType: 'html',
-            }).done(function(response) {
-                let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
-                a--;
-                $("#favourite-quantity").text("" + a);
-                $("#favourite").empty();
-                $("#favourite").html(response);
-                alertify.success('Đã xoá yêu thích');
-                if (document.querySelector("#favourite" + id) != null) {
-                    document.querySelector("#favourite" + id).style.background = "#ffffff";
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá sản phẩm khỏi danh sách yêu thích ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/DeleteFavourite/" + id,
+                            method: 'GET',
+                            dataType: 'html',
+                        }).done(function(response) {
+                            let a = parseInt(document.querySelector("#favourite-quantity").innerHTML);
+                            a--;
+                            $("#favourite-quantity").text("" + a);
+                            $("#favourite").empty();
+                            $("#favourite").html(response);
+                            alertify.success('Đã xoá yêu thích');
+                            if (document.querySelector("#favourite" + id) != null) {
+                                document.querySelector("#favourite" + id).style.background = "#ffffff";
+                            }
+                            if (document.querySelector("#favourite-grid" + id) != null) {
+                                document.querySelector("#favourite-grid" + id).style.background = "#ffffff";
+                            }
+                            if (document.querySelector("#favourite-product-grid" + id) != null) {
+                                document.querySelector("#favourite-product-grid" + id).style.background = "#ffffff";
+                            }
+                            if (document.querySelector("#favourite-detail" + id) != null) {
+                                document.querySelector("#favourite-detail" + id).style.background = "#ffffff";
+                            }
+                            if (document.querySelector("#favourite-product-detail" + id) != null) {
+                                document.querySelector("#favourite-product-detail" + id).style.color = "#fff";
+                            }
+                        })
+                    },
+                    cancel: function() {
+
+                    }
                 }
-                if (document.querySelector("#favourite-grid" + id) != null) {
-                    document.querySelector("#favourite-grid" + id).style.background = "#ffffff";
-                }
-                if (document.querySelector("#favourite-product-grid" + id) != null) {
-                    document.querySelector("#favourite-product-grid" + id).style.background = "#ffffff";
-                }
-                if (document.querySelector("#favourite-detail" + id) != null) {
-                    document.querySelector("#favourite-detail" + id).style.background = "#ffffff";
-                }
-                if (document.querySelector("#favourite-product-detail" + id) != null) {
-                    document.querySelector("#favourite-product-detail" + id).style.color = "#fff";
-                }
-            })
+            });
+
         }
 
         function AddCart(id, quantity = null) {
             if (quantity != null) {
                 $.ajax({
-                    url: "{{URL::to('/')}}/AddCart/" + id + "/" + quantity,
-                    type: 'GET',
-                }).done(function(response) {
-                    RenderCart(response);
-                    alertify.success('Thêm vào giỏ hàng thành công!');
-                });
+                    url: "{{URL::to('/')}}/checkCart/" + id + "/" + quantity,
+                    method: "GET"
+                }).done(function(result) {
+                    if (result == true) {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/AddCart/" + id + "/" + quantity,
+                            type: 'GET',
+                        }).done(function(response) {
+                            RenderCart(response);
+                            alertify.success('Thêm vào giỏ hàng thành công!');
+                        });
+                    } else {
+                        alertify.error('Vượt quá cân nặng giỏ hàng!');
+                    }
+                })
             } else {
                 let temp = parseInt($("#detail-quantity").val());
                 AddCart(id, temp);
@@ -483,14 +533,27 @@
 
 
         $("#change-item-cart").on("click", ".si-close i", function() {
-            $.ajax({
-                url: "{{URL::to('/')}}/Delete/" + $(this).data("id"),
-                type: 'GET',
+            let id = $(this).data("id");
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá sản phẩm khỏi giỏ hàng ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/Delete/" + id,
+                            type: 'GET',
 
-            }).done(function(response) {
-                RenderCart(response);
-                alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
+                        }).done(function(response) {
+                            RenderCart(response);
+                            alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
+                        });
+                    },
+                    cancel: function() {
+
+                    }
+                }
             });
+
 
         });
 
@@ -512,13 +575,25 @@
         }
 
         function DeleteItemListCart(id) {
-            $.ajax({
-                url: "{{URL::to('/')}}/DeleteItemCart/" + id,
-                type: 'GET',
-            }).done(function(response) {
-                RenderListCart(response);
-                alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
-            })
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá sản phẩm khỏi giỏ hàng ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/DeleteItemCart/" + id,
+                            type: 'GET',
+                        }).done(function(response) {
+                            RenderListCart(response);
+                            alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
+                        });
+                    },
+                    cancel: function() {
+
+                    }
+                }
+            });
+
         }
 
         function RenderListCart(response) {
@@ -553,6 +628,139 @@
                 alertify.success('Đã xoá sản phẩm ra khỏi giỏ hàng thành công!');
             });
         }
+
+        $(document).ready(function() {
+            load_comment();
+
+            function load_comment() {
+                var product_id = $('.comment_product_id').val();
+                var _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{url('/loadComment')}}",
+                    method: "POST",
+                    data: {
+                        product_id: product_id,
+                        _token: _token
+                    },
+                    success: function(data) {
+                        $('#_comment_show').html(data);
+                    }
+                });
+            };
+
+            $('.send-comment').click(function() {
+                var product_id = $('.comment_product_id').val();
+                var comment_content = $('.comment-content').val();
+                var _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{url('/postComment')}}",
+                    method: "POST",
+                    data: {
+                        product_id: product_id,
+                        comment_content: comment_content,
+                        _token: _token
+                    },
+                    success: function(data) {
+                        load_comment();
+                        $('.comment-content').val('')
+                        alertify.success('Đã thêm bình luận!');
+                    }
+                });
+            });
+
+            $('.site-btn').click(function() {
+                var contact_name = $('.contact_name').val();
+                var contact_sdt = $('.contact_sdt').val();
+                var contact_email = $('.contact_email').val();
+                var contact_title = $('.contact_title').val();
+                var contact_content = $('.contact_content').val();
+                var _token = $('input[name="_token"]').val();
+                $.ajax({
+                    url: "{{URL::to('/sendContact')}}",
+                    method: "POST",
+                    data: {
+                        contact_name: contact_name,
+                        contact_sdt: contact_sdt,
+                        contact_email: contact_email,
+                        contact_title: contact_title,
+                        contact_content: contact_content,
+                        _token: _token
+                    },
+                    success: function(data) {
+                        $('.contact-form').html();
+                        $('.contact_name').val('')
+                        $('.contact_sdt').val('')
+                        $('.contact_email').val('')
+                        $('.contact_title').val('')
+                        $('.contact_content').val('')
+                        $('.contact').html();
+                        alertify.success('Cảm ơn bạn đã gửi lời góp ý tới chúng tôi! Lời góp ý của bạn sẽ là một phần động lực để thúc đẩy chúng tôi dần hoàn thiện và phát triển hơn.');
+                    }
+                });
+            });
+        })
+
+        function Login() {
+            var string = location.href;
+            window.location = string.slice(0, string.indexOf("public") + "public/".length) + "login";
+        }
+
+        function load_comment() {
+            var product_id = $('.comment_product_id').val();
+            var _token = $('input[name="_token"]').val();
+            $.ajax({
+                url: "{{url('/loadComment')}}",
+                method: "POST",
+                data: {
+                    product_id: product_id,
+                    _token: _token
+                },
+                success: function(data) {
+                    $('#_comment_show').html(data);
+                }
+            });
+        };
+
+        function getReply(id, idSP) {
+            var comment_content = $('.comment-content-reply-' + id).val();
+            var product_id = idSP
+            var comment_id = id;
+            var checkLogin = $('#imgUser').attr("src").indexOf("user.png");
+            if (checkLogin < 0) {
+                $.ajax({
+                    url: "{{url('/replyComment')}}",
+                    method: "GET",
+                    data: {
+                        product_id: product_id,
+                        comment_content: comment_content,
+                        comment_id: comment_id
+                    },
+                    success: function(data) {
+                        load_comment();
+                        $('.comment-content-reply-' + id).val('');
+                        alertify.success('Đã thêm bình luận!');
+                    }
+                });
+            } else {
+                Login();
+            }
+        }
+
+        function showReply(id) {
+            var node = document.querySelector('.replies-' + id);
+            var display = node.style.display;
+            node.style.display = display == "none" ? 'block' : "none";
+        }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imgUpload').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
     </script>
     <script>
         // lay duong dan trang web
@@ -578,6 +786,7 @@
             document.querySelector("#contact").classList.add('active');
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 </body>
 
 </html>

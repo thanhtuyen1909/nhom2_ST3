@@ -58,7 +58,7 @@
                                     <img src="../img/image_sql/products/{{$photo_product[$i][0]->filename}}" alt="" style="width:100px; height:100px;">
                                 </td>
                                 <td class="shoping__cart__item-1">
-                                    <h5><a href="{{URL::to('/')}}/order-details/{{$listOrderDetail[$i]->idSP}}">{{$listOderDetailName[$i]}}</a></h5>
+                                    <h5><a href="{{URL::to('/')}}/shop-details/{{$listOrderDetail[$i]->idSP}}">{{$listOderDetailName[$i]}}</a></h5>
                                 </td>
                                 <td class="shoping__cart__price-1">
                                     {{$listOrderDetail[$i]->soluong}}
@@ -74,12 +74,7 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="shoping__cart__btns">
-                            <a href="{{ url('/shop-grid') }}" class="primary-btn cart-btn">CONTINUE SHOPPING</a>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="shoping__cart__btns" style="text-align: right;">
-                            <a href="#" class="primary-btn cart-btn">REVIEW</a>
+                            <a href="{{ url('/shop-grid') }}" class="primary-btn cart-btn">TIẾP TỤC MUA HÀNG</a>
                         </div>
                     </div>
                 </div>

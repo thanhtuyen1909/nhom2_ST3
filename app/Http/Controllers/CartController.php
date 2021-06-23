@@ -82,10 +82,25 @@ class CartController extends Controller
             $req->session()->forget('Cart');
         }
         $cartInfo = CartInfo::where('idProduct', '=', $id)->get();
-        CartInfo::destroy($cartInfo[0]['id']);
+        if(count($cartInfo)>0){
+            CartInfo::destroy($cartInfo[0]['id']);
+        }
         return view('.pages/cartInfo');
     }
-
+    public function DeleteAllItemCart(Request $req){
+        $oldCart = Session('Cart') ? Session('Cart') : null;
+        $newCart = new Cart($oldCart);
+        if (Count($newCart->product) > 0) {
+            foreach($newCart->product as $item){
+                $newCart->DeleteItemCart($item['productInfo']->id);
+                $cartInfo = CartInfo::where('idProduct', '=', $item['productInfo']->id)->get();
+                CartInfo::destroy($cartInfo[0]['id']);
+            }
+        }
+        $req->session()->forget('Cart');
+        return view('.pages/cartInfo');
+    }
+    
     public function DeleteItemListCart(Request $req, $id)
     {
         $oldCart = Session('Cart') ? Session('Cart') : null;
@@ -106,7 +121,7 @@ class CartController extends Controller
         $oldCart = Session('Cart') ? Session('Cart') : null;
         $newCart = new Cart($oldCart);
         $newCart->DeleteOneOfItemCart($id);
-        if (count(array($newCart->product)) > 0) {
+        if (!is_null($newCart->product)) {
             $req->session()->put('Cart', $newCart);
         } else {
             $req->session()->forget('Cart');
@@ -130,7 +145,7 @@ class CartController extends Controller
             $oldCart = Session('Cart') ? Session('Cart') : null;
             $newCart = new Cart($oldCart);
             $newCart->UpdateCart($id, $quantity);
-            if (Count($newCart->product) > 0) {
+            if (!is_null($newCart->product)) {
                 $req->session()->put('Cart', $newCart);
             } else {
                 $req->session()->forget('Cart');
@@ -143,7 +158,7 @@ class CartController extends Controller
             $oldCart = Session('Cart') ? Session('Cart') : null;
             $newCart = new Cart($oldCart);
             $newCart->DeleteItemCart($id);
-            if (Count($newCart->product) > 0) {
+            if (!is_null($newCart->product)) {
                 $req->session()->put('Cart', $newCart);
             } else {
                 $req->session()->forget('Cart');
@@ -153,5 +168,21 @@ class CartController extends Controller
         }
 
         return view('.pages/listCart');
+    }
+
+    function checkCart($id,$quantity){
+        $oldCart = Session('Cart') ? Session('Cart') : null;
+        $newCart = new Cart($oldCart);
+        $totalWeight = 0;
+        if (!is_null($newCart->product)) {
+            foreach($newCart->product as $item){
+                $totalWeight += $item['productInfo']->weight * $item['quantity'];
+            }
+        }
+        $product = Product::find($id);
+        if($totalWeight + $product->weight*$quantity > 5){
+            return false;
+        }
+        return true;
     }
 }

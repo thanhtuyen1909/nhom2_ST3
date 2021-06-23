@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="{{ URL::asset('css/bootstrap.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ URL::asset('css/all.min.css') }}" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
     <!-- CSS -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" />
     <!-- Default theme -->
@@ -76,12 +77,12 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a id="products" class="dropdown-item" href="{{ url('/admin/products') }}"><i class="fas fa-archive"></i> Sản phẩm - Loại sản phẩm</a>
-                                <a id="donhang" class="dropdown-item" href="{{ url('/admin/') }}"><i class="fas fa-box"></i> Đơn hàng</a>
+                                <a id="donhang" class="dropdown-item" href="{{ url('/admin/listDonHang') }}"><i class="fas fa-box"></i> Đơn hàng</a>
                                 <a id="donhang" class="dropdown-item" href="{{ url('/admin/listContact') }}"><i class="fas fa-envelope-open-text"></i> Góp ý</a>
                             </div>
                         </li>
-                        <li id="binhluan" class="nav-item">
-                            <a class="nav-link" href="#">
+                        <li id="commentManager" class="nav-item">
+                            <a class="nav-link" href="{{ url('/admin/commentManager') }}">
                                 <i class="fas fa-comments"></i>
                                 Bình luận/Đánh giá
                             </a>
@@ -101,14 +102,15 @@
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a id="account" class="dropdown-item" href="{{ url('/admin/account') }}"><i class="fas fa-user-circle"></i> Thông tin cá nhân</a>
-                                <a id="giaodien" class="dropdown-item" href="#"><i class="fas fa-tv"></i> Giao diện</a>
+                                <a id="giaodien" class="dropdown-item" href="{{ url('/admin/banner') }}"><i class="fas fa-tv"></i> Giao diện</a>
                             </div>
                         </li>
                     </ul>
+
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link d-block" href="{{ url('/admin/login') }}">
-                                Admin, <b>Logout</b>
+                            <a class="nav-link d-block" href="{{ url('/admin/logout') }}">
+                                {{Session::get('userAdmin')->name}}<b>, Logout</b>
                             </a>
                         </li>
                     </ul>
@@ -162,15 +164,23 @@
             let a = $(this).data("id")
             window.location.href = "{{url('/admin/edit-product/')}}" + "/" + a;
         })
+
         $("#account-body").on("click", "tr .tm-product-name", function() {
             // let a = $(this).data("id")
             // window.location.href = "{{url('/admin/edit-product/')}}" + "/" + a;
             window.location.href = "{{url('/admin/edit-account/')}}";
         })
+
         $("#protype-body").on("click", ".tm-product-name", function() {
             let a = $(this).data("id")
             window.location.href = "{{url('/admin/edit-protype/')}}" + "/" + a;
         })
+
+        $("#order-body").on("click", "tr .tm-product-name", function() {
+            let a = $(this).data("id")
+            window.location.href = "{{url('/admin/order-detail/')}}" + "/" + a;
+        })
+
         $(function() {
             // Multiple images preview with JavaScript
             var multiImgPreview = function(input, imgPreviewPlaceholder) {
@@ -203,54 +213,285 @@
             }
         }
 
-        function deleteProduct(id) {
-            $.ajax({
-                url: "{{URL::to('/')}}/admin/deleteProduct/" + id,
-                method: 'GET',
-            }).done(function(response) {
-                $("#product-body").empty();
-                $("#product-body").html(response);
-                alertify.success('Đã xoá sản phẩm!!!');
+        function changeStatus() {
+            let value = $("#select_id").val();
+            let url = window.location.href;
+            let id = url.slice(url.lastIndexOf('/') + 1);
+            window.location = "{{URL::to('/')}}/admin/updateDH/" + id + "/" + value;
+        }
+
+        function deleteBanner(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá banner này?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/admin/deleteBanner/" + id,
+                            method: 'GET',
+                        }).done(function(response) {
+                            $("#banner-hero-body").empty();
+                            $("#banner-hero-body").html(response);
+                            alertify.success('Đã xoá banner!!!');
+                        });
+                    },
+                    cancel: function() {
+
+                    }
+                }
             });
+        }
+
+        function deleteBanner1(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá banner này?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/admin/deleteBanner1/" + id,
+                            method: 'GET',
+                        }).done(function(response) {
+                            $("#banner-1-body").empty();
+                            $("#banner-1-body").html(response);
+                            alertify.success('Đã xoá banner!!!');
+                        });
+                    },
+                    cancel: function() {
+
+                    }
+                }
+            });
+        }
+
+        function deleteBanner2(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá banner này?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/admin/deleteBanner2/" + id,
+                            method: 'GET',
+                        }).done(function(response) {
+                            $("#banner-2-body").empty();
+                            $("#banner-2-body").html(response);
+                            alertify.success('Đã xoá banner!!!');
+                        });
+                    },
+                    cancel: function() {
+
+                    }
+                }
+            });
+        }
+
+        function deleteProduct(id) {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/admin/deleteProduct/" + id,
+                            method: 'GET',
+                        }).done(function(response) {
+                            console.log(response);
+                            if (String(response).indexOf("deleteProduct(" + id + ")") == -1) {
+                                $("#product-body").empty();
+                                $("#product-body").html(response);
+                                alertify.success('Đã xoá sản phẩm!!!');
+                            } else {
+                                alertify.error('Bạn không có quyền xoá sản phảm!!!');
+                            }
+                        });
+
+                    },
+                    cancel: function() {
+
+                    }
+
+                }
+            });
+        }
+
+        function deleteMulti() {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá các sản phẩm này ?',
+                buttons: {
+                    confirm: function() {
+                        const checkbox = document.querySelectorAll(".deleteMulti");
+                        var check = 0;
+                        for (let i = 0; i < checkbox.length; i++) {
+                            if (checkbox[i].checked == true) {
+                                check++;
+                                $.ajax({
+                                    url: "{{URL::to('/')}}/admin/deleteProduct/" + checkbox[i].value,
+                                    method: 'GET',
+                                }).done(function(response) {
+                                    if (String(response).indexOf("deleteProduct(" + checkbox[i].value + ")") == -1) {
+                                        $("#product-body").empty();
+                                        $("#product-body").html(response);
+                                    }
+                                });
+                            }
+                        }
+                        if (check > 0) {
+                            alertify.success("Xoá sản phẩm thành công!!")
+                        } else {
+                            alertify.error("Bạn không có quyền xoá sản phẩm");
+                        }
+                    },
+                    cancel: function() {
+
+                    }
+
+                }
+            });
+
         }
 
         function deleteProtype(id) {
-            $.ajax({
-                url: "{{URL::to('/')}}/admin/deleteProtype/" + id,
-                method: 'GET',
-            }).done(function(response) {
-                $("#protype-body").empty();
-                $("#protype-body").html(response);
-                alertify.success('Đã xoá loại sản phẩm!!!');
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc muốn xoá loại sản phẩm này ?',
+                buttons: {
+                    confirm: function() {
+                        $.ajax({
+                            url: "{{URL::to('/')}}/admin/deleteProtype/" + id,
+                            method: 'GET',
+                        }).done(function(response) {
+                            console.log($("#protype-body").html());
+                            if (String(response).indexOf("deleteProtype(" + id + ")") == -1) {
+                                $("#protype-body").empty();
+                                $("#protype-body").html(response);
+                                alertify.success('Đã xoá loại sản phẩm!!!');
+                            } else {
+                                alertify.error('Còn sản phẩm thuộc loại này!!');
+                            }
+
+                        });
+                    },
+                    cancel: function() {}
+                }
             });
+
         }
 
         //checkbox in contact
-        const checkBContact = document.querySelectorAll('#checkContact');
 
-        checkBContact.forEach(element => {
-            element.addEventListener('click', function() {
-                if (this.checked) {
-                    $.ajax({
-                        url: "{{URL::to('/')}}/admin/updateSeen/" + element.value,
-                        method: 'GET',
-                    }).done(function(response) {
-                        $("#contact-body").empty();
-                        $("#contact-body").html(response);
-                        alertify.success('Đã xem góp ý!!!');
-                    });
-                } else {
-                    $.ajax({
-                        url: "{{URL::to('/')}}/admin/updateSeen/" + element.value,
-                        method: 'GET',
-                    }).done(function(response) {
-                        $("#contact-body").empty();
-                        $("#contact-body").html(response);
-                        alertify.success('Đã huỷ xem góp ý!!!');
-                    });
+        function checkSeen(id) {
+            const checkBContact = document.querySelector('#checkContact' + id);
+
+            if (checkBContact.checked == true) {
+                $.ajax({
+                    url: "{{URL::to('/')}}/admin/updateSeen/" + id,
+                    method: 'GET',
+                }).done(function(response) {
+                    $("#contact-body").empty();
+                    $("#contact-body").html(response);
+                    alertify.success('Đã xem góp ý!!!');
+                });
+            } else {
+                $.ajax({
+                    url: "{{URL::to('/')}}/admin/updateSeen/" + id,
+                    method: 'GET',
+                }).done(function(response) {
+                    $("#contact-body").empty();
+                    $("#contact-body").html(response);
+                    alertify.success('Đã huỷ xem góp ý!!!');
+                });
+            }
+        }
+
+        function getReply(id, idSP) {
+            var comment_content = $('.comment-content-reply-' + id).val();
+            var product_id = idSP;
+            var comment_id = id;
+            $.ajax({
+                url: "{{url('/admin/reply-comment')}}",
+                method: "POST",
+                data: {
+                    product_id: product_id,
+                    comment_content: comment_content,
+                    comment_id: comment_id,
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function(data) {
+                    $("#comment-body").empty();
+                    $("#comment-body").html(data);
+                    $('.comment-content-reply-' + id).val('');
+                    alertify.success('Đã trả lời bình luận!');
                 }
             });
-        });
+        };
+
+        function deleteComment(id) {
+            $.ajax({
+                url: "{{URL::to('/')}}/admin/deleteComment",
+                method: "POST",
+                data: {
+                    comment_id: id,
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function(data) {
+                    $("#comment-body").empty();
+                    $("#comment-body").html(data);
+                    alertify.success('Đã xoá bình luận!');
+                }
+            });
+        };
+
+        function deleteMultiComment() {
+            $.confirm({
+                title: 'Xác nhận!',
+                content: 'Bạn có chắc chắn muốn xoá các bình luận này ?',
+                buttons: {
+                    confirm: function() {
+                        const checkbox = document.querySelectorAll(".multi-comment");
+                        for (let i = 0; i < checkbox.length; i++) {
+                            if (checkbox[i].checked == true) {
+                                $.ajax({
+                                    url: "{{URL::to('/')}}/admin/deleteComment",
+                                    method: "POST",
+                                    data: {
+                                        comment_id: checkbox[i].value,
+                                        _token: "{{ csrf_token() }}",
+                                    },
+                                    success: function(data) {
+                                        $("#comment-body").empty();
+                                        $("#comment-body").html(data);
+                                        
+                                    }
+                                });
+                            }
+                        }
+                        alertify.success('Đã xoá bình luận!');
+
+                    },
+                    cancel: function() {
+
+                    }
+
+                }
+            });
+        }
+        function download(){
+            let url = window.location.href;
+            let id = url.slice(url.lastIndexOf('/') + 1);
+            window.location = "{{URL::to('/')}}/admin/download/"+id;
+        }
+        function roleChange() {
+            var id = $('#select_id').val();
+            $.ajax({
+                url: "{{URL::to('/')}}/admin/rolechange/" + id,
+                method: "GET"
+            }).done(function(response) {
+                $("#account-body").empty();
+                $("#account-body").html(response);
+            })
+        }
     </script>
     <script>
         // lay duong dan trang web
@@ -267,6 +508,10 @@
 
         if (index == document.querySelector("#accountManage").id) {
             document.querySelector("#accountManage").classList.add('active');
+        }
+
+        if (index == document.querySelector("#commentManager").id) {
+            document.querySelector("#commentManager").classList.add('active');
         }
 
         if (href.indexOf("edit-account") >= 0) {
@@ -293,6 +538,7 @@
             document.querySelector("#caidat").classList.add('active');
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
 </body>
 
 </html>

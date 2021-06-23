@@ -23,11 +23,11 @@
         <form action="" class="tm-signup-form row">
           <div class="form-group col-lg-6">
             <label for="name">Username</label>
-            <input id="name" name="name" type="text" class="form-control validate" />
+            <input id="name" name="name" type="text" class="form-control validate" value="{{Session::get('userAdmin')->name}}"/>
           </div>
           <div class="form-group col-lg-6">
             <label for="email">Email</label>
-            <input id="email" name="email" type="email" class="form-control validate" />
+            <input id="email" name="email" type="email" style="background-color: #54657d;" disabled class="form-control validate" value="{{Session::get('userAdmin')->email}}"/>
           </div>
           <div class="form-group col-lg-6">
             <label class="tm-hide-sm">&nbsp;</label>

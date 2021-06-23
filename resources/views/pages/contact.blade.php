@@ -81,24 +81,24 @@
                 </div>
             </div>
         </div>
-        <form action="{{URL::to('/')}}/sendContact" method="post">
+        <form action="#">
             @csrf
-            <div class="row">
+            <div class="row contact">
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Điền họ & tên" name="hoten" require>
+                    <input type="text" placeholder="Điền họ & tên" class="contact_name">
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Điền số điện thoại" name="soDT" require>
+                    <input type="text" placeholder="Điền số điện thoại" class="contact_sdt">
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Điền email" name="email" require> 
+                    <input type="text" placeholder="Điền email" class="contact_email"> 
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Tiêu đề" name="tieude" require>
+                    <input type="text" placeholder="Tiêu đề" class="contact_title">
                 </div>
                 <div class="col-lg-12 text-center">
-                    <textarea placeholder="Nội dung" name="noidung" require></textarea>
-                    <button type="submit" class="site-btn">Gửi</button>
+                    <textarea placeholder="Nội dung" class="contact_content"></textarea>
+                    <button type="submit" class="site-btn">Gửi góp ý</button>
                 </div>
             </div>
         </form>

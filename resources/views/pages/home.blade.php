@@ -1,11 +1,14 @@
 ﻿@extends('master.layout')
 
 @section('banner')
-<div class="hero__item set-bg" data-setbg="img/hero/banner.jpg">
+@php
+$bannerActives = DB::table('banner')->where([['status','active'], ['position_id', 1]])->get();
+@endphp
+<div class="hero__item set-bg" data-setbg="img/banner/<?= $bannerActives[0]->filename ?>">
     <div class="hero__text">
-        <span>THỰC PHẨM SẠCH</span>
-        <h2>Rau củ <br />100% Organic</h2>
-        <p>Miễn phí ship khi đạt giá trị đơn hàng từ 1.000.000 đồng</p>
+        <span>{{$bannerActives[0]->sub_title}}</span>
+        <h2>{{$bannerActives[0]->title}}</h2>
+        <p>{{$bannerActives[0]->description}}</p>
         <a href="./shop-grid" class="primary-btn">MUA NGAY</a>
     </div>
 </div>
@@ -20,7 +23,7 @@
                 @foreach($data['protype'] as $value)
                 <div class="col-lg-3">
                     <div class="categories__item set-bg" data-setbg="img/image_sql/categories/<?= $value->type_img ?>">
-                        <h5><a href="javascript:"><?= $value->type_name ?></a></h5>
+                        <h5><a href="{{URL::to('/')}}/classifiProduct/<?= $value->type_id ?>"><?= $value->type_name ?></a></h5>
                     </div>
                 </div>
                 @endforeach
@@ -40,7 +43,7 @@
                 </div>
                 <div class="featured__controls">
                     <ul>
-                        <li class="active" data-filter="*">All</li>
+                        <li class="active" data-filter="all">Tất cả</li>
                         <li data-filter=".raucu">Rau củ</li>
                         <li data-filter=".fresh-meat">Thịt sạch</li>
                         <li data-filter=".haisan">Hải sản</li>
@@ -55,8 +58,11 @@
             @foreach($data['product'] as $value)
             @if($value->type_id == 4 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix haisan">
-                <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                <div class="featured__item product__item">
+                    <div class="featured__item__pic product__discount__item__pic  set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                        @if($value->sale > 0)
+                        <div class="product__discount__percent">-{{$value->sale}}%</div>
+                        @endif
                         <ul class="featured__item__pic__hover">
                             <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
@@ -71,7 +77,7 @@
                             <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
                             @endif
                             @else
-                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
                             @endif
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
                             @if(Session::get('Login') != null)
@@ -83,7 +89,11 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
-                        <h5><?= number_format($value->price) ?> VND</h5>
+                        @if($value->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -94,9 +104,12 @@
             @if($value->type_id == 5 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix bovatrung">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                    <div class="featured__item__pic product__discount__item__pic  set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                        @if($value->sale > 0)
+                        <div class="product__discount__percent">-{{$value->sale}}%</div>
+                        @endif
                         <ul class="featured__item__pic__hover">
-                        <?php $temp = false; ?>
+                            <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
                             @foreach($data['check'] as $check)
                             @if($check == $value->id)
@@ -109,7 +122,7 @@
                             <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
                             @endif
                             @else
-                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
                             @endif
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
                             @if(Session::get('Login') != null)
@@ -121,7 +134,11 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
-                        <h5><?= number_format($value->price) ?> VND</h5>
+                        @if($value->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -132,9 +149,12 @@
             @if($value->type_id == 3 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix traicayvahat">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                    <div class="featured__item__pic product__discount__item__pic  set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                        @if($value->sale > 0)
+                        <div class="product__discount__percent">-{{$value->sale}}%</div>
+                        @endif
                         <ul class="featured__item__pic__hover">
-                        <?php $temp = false; ?>
+                            <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
                             @foreach($data['check'] as $check)
                             @if($check == $value->id)
@@ -147,7 +167,7 @@
                             <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
                             @endif
                             @else
-                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
                             @endif
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
                             @if(Session::get('Login') != null)
@@ -159,7 +179,11 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
-                        <h5><?= number_format($value->price) ?> VND</h5>
+                        @if($value->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -170,9 +194,12 @@
             @if($value->type_id == 1 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-3 col-sm-6 mix fresh-meat">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
-                    <ul class="featured__item__pic__hover">
-                    <?php $temp = false; ?>
+                    <div class="featured__item__pic product__discount__item__pic  set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                        @if($value->sale > 0)
+                        <div class="product__discount__percent">-{{$value->sale}}%</div>
+                        @endif
+                        <ul class="featured__item__pic__hover">
+                            <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
                             @foreach($data['check'] as $check)
                             @if($check == $value->id)
@@ -185,7 +212,7 @@
                             <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
                             @endif
                             @else
-                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
                             @endif
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
                             @if(Session::get('Login') != null)
@@ -197,7 +224,11 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
-                        <h5><?= number_format($value->price) ?> VND</h5>
+                        @if($value->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -208,9 +239,12 @@
             @if($value->type_id == 2 && $value->feature == 1 && $value->photo_feature == 1)
             <div class="col-lg-3 col-md-4 col-sm-6 mix raucu">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                    <div class="featured__item__pic product__discount__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
+                        @if($value->sale > 0)
+                        <div class="product__discount__percent">-{{$value->sale}}%</div>
+                        @endif
                         <ul class="featured__item__pic__hover">
-                        <?php $temp = false; ?>
+                            <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
                             @foreach($data['check'] as $check)
                             @if($check == $value->id)
@@ -223,7 +257,7 @@
                             <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
                             @endif
                             @else
-                            <li><a  href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
                             @endif
                             <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
                             @if(Session::get('Login') != null)
@@ -235,13 +269,16 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{URL::to('/')}}/shop-details/{{$value->id}}"><?= $value->name ?></a></h6>
-                        <h5><?= number_format($value->price) ?> VND</h5>
+                        @if($value->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
             @endif
             @endforeach
-
         </div>
 
     </div>
@@ -249,17 +286,23 @@
 <!-- Featured Section End -->
 
 <!-- Banner Begin -->
+
+@php
+$bannerActive1 = DB::table('banner')->where([['status','active'], ['position_id', 2]])->get();
+$bannerActive2 = DB::table('banner')->where([['status','active'], ['position_id', 3]])->get();
+@endphp
+
 <div class="banner">
     <div class="container">
         <div class="row">
             <div class="col-lg-6 col-md-6 col-sm-6">
-                <div class="banner__pic">
-                    <img src="img/banner/banner-1.jpg" alt="banner 1">
+                <div class="banner__pic banner-1">
+                    <img src="img/banner/<?= $bannerActive1[0]->filename ?>" alt="banner 1">
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
-                <div class="banner__pic">
-                    <img src="img/banner/banner-1.jpg" alt="banner 2">
+                <div class="banner__pic banner-2">
+                    <img src="img/banner/<?= $bannerActive2[0]->filename ?>" alt="banner 2">
                 </div>
             </div>
         </div>
@@ -283,7 +326,11 @@
                                 </div>
                                 <div class="latest-product__item__text">
                                     <h6><?= $value->name ?></h6>
-                                    <span><?= number_format($value->price) ?> VND</span>
+                                    @if($value->sale > 0)
+                                    <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                                    @else
+                                    <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                                    @endif
                                 </div>
                             </a>
                             @endforeach
@@ -296,7 +343,11 @@
                                 </div>
                                 <div class="latest-product__item__text">
                                     <h6><?= $value->name ?></h6>
-                                    <span><?= number_format($value->price) ?> VND</span>
+                                    @if($value->sale > 0)
+                                    <div class="product__item__price product__details__price">{{number_format($value->price*(100-$value->sale)/100)}} VND <span>{{number_format($value->price)}} VND</span></div>
+                                    @else
+                                    <div class="product__item__price product__item__price">{{number_format($value->price*(100-$value->sale)/100)}} VND</div>
+                                    @endif
                                 </div>
                             </a>
                             @endforeach

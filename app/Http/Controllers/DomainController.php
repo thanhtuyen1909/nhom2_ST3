@@ -7,6 +7,7 @@ use App\Cart_model;
 use App\CartInfo;
 use App\Contact;
 use App\ChiTietDonHang;
+use App\Comment;
 use App\DonHang;
 use App\DonHangInfo;
 use App\Favourite;
@@ -17,8 +18,12 @@ use App\Protype;
 use App\Product;
 use App\ProductsPhotos;
 use App\Status;
+use App\User;
+use Carbon\Carbon;
+use App\Rating;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Contracts\Session\Session;
+use SebastianBergmann\Environment\Console;
 
 class DomainController extends Controller
 {
@@ -32,36 +37,82 @@ class DomainController extends Controller
         $request->session()->forget('Cart');
         $request->session()->forget('Login');
         $request->session()->forget('Favourite');
+        $request->session()->forget('url.intended');
         Auth::logout();
 
         return redirect('/home');
     }
 
+    public function autoSale()
+    {
+        $product = Product::all();
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        foreach ($product as $item) {
+            $time = Carbon::parse($item->created_at);
+
+            if ($now->year == $time->year) {
+                if ($now->dayOfYear - $time->dayOfYear + 1 == 4) {
+                    $item->sale = 20;
+                } else if ($now->dayOfYear - $time->dayOfYear + 1 == 5) {
+                    $item->sale = 40;
+                } else if ($now->dayOfYear - $time->dayOfYear + 1 == 6) {
+                    $item->sale = 60;
+                } else if ($now->dayOfYear - $time->dayOfYear + 1 == 7) {
+                    $item->sale = 80;
+                } else if ($now->dayOfYear - $time->dayOfYear + 1 < 4) {
+                    $item->sale = 0;
+                } else {
+                    $item->amount = 15;
+                    $item->created_at = $now->toDateTimeString();
+                }
+            } else if ($now->year > $time->year) {
+                if ($now->dayOfYear + 365 - $time->dayOfYear + 1 == 4) {
+                    $item->sale = 20;
+                } else if ($now->dayOfYear + 365 - $time->dayOfYear + 1 == 5) {
+                    $item->sale = 40;
+                } else if ($now->dayOfYear + 365 - $time->dayOfYear + 1 == 6) {
+                    $item->sale = 60;
+                } else if ($now->dayOfYear + 365 - $time->dayOfYear + 1 == 7) {
+                    $item->sale = 80;
+                } else if ($now->dayOfYear + 365 - $time->dayOfYear + 1 < 4) {
+                    $item->sale = 0;
+                } else {
+                    $item->amount = 15;
+                    $item->created_at = $now->toDateTimeString();
+                    $item->update_at = $now->toDateTimeString();
+                }
+            }
+            $item->save();
+        }
+    }
+    
     public function getData()
     {
+        $this->autoSale();
         $saleProduct = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
-        ->where('products_photos.photo_feature', '=', 1)
-        ->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+            ->where('products_photos.photo_feature', '=', 1)
+            ->get();
         $product = DB::table('products')
-        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->get();
+            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', 1)
+            ->get();
         $protype = DB::table('protypes')->get();
         $productLastList1 = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->orderby('products.id', 'desc')
-        ->limit(3)
-        ->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->orderby('products.id', 'desc')
+            ->limit(3)
+            ->get();
         $productLastList2 = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->orderby('products.id', 'desc')
-        ->skip(3)->take(3)->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->orderby('products.id', 'desc')
+            ->skip(3)->take(3)->get();
 
         $product1 = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->where('products_photos.photo_feature', '=', 1)->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', '=', 1)->get();
 
         $data = [];
         $data['product'] = $product;
@@ -74,13 +125,15 @@ class DomainController extends Controller
         $data['proLast2'] = $productLastList2;
         $data['saleProduct'] = $saleProduct;
 
-        
-
         return $data;
     }
 
     public function getLogin()
     {
+        if(!session()->has('url.intended'))
+        {
+            session(['url.intended' => url()->previous()]);
+        }
         return view('auth.login');
     }
 
@@ -114,7 +167,7 @@ class DomainController extends Controller
                     foreach ($cartInfo as $info) {
                         $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('products.id', '=', $info->idProduct)->take(1)->get()[0];
 
-                        $subProduct = ['quantity' => $info->quantity, 'price' => $info->quantity * $temp_product->price, 'productInfo' => $temp_product];
+                        $subProduct = ['quantity' => $info->quantity, 'price' => $info->quantity * $temp_product->price * (100 - $temp_product->sale) / 100, 'productInfo' => $temp_product];
                         $totalQuantity += $subProduct['quantity'];
                         $totalPrice += $subProduct['price'];
                         $product[$info->idProduct] = $subProduct;
@@ -157,6 +210,8 @@ class DomainController extends Controller
             if ($request->session()->get('Login') != null) {
                 return view('pages.' . $name, ['data' => $data]);
             } else return $this->getLogin();
+        } else if ($name == "loadComment" || $name == "postComment") {
+            return;
         } else {
             return view('pages.' . $name, ['data' => $data]);
         }
@@ -219,8 +274,8 @@ class DomainController extends Controller
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
                 $temp_product = DB::table('products')
-                ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-                ->where('id', '=', $info->idProduct)->take(1)->get();
+                    ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+                    ->where([['id', '=', $info->idProduct], ['products_photos.photo_feature', 1]])->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -243,7 +298,7 @@ class DomainController extends Controller
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
                 $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-                ->where('id', '=', $info->idProduct)->take(1)->get();
+                    ->where('id', '=', $info->idProduct)->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -296,6 +351,7 @@ class DomainController extends Controller
             $data['favourite'] = $favouriteProduct;
             $data['check'] = $check;
         }
+
         return view('pages.home', ['data' => $data]);
     }
 
@@ -310,26 +366,15 @@ class DomainController extends Controller
      */
     public function createContact(Request $request)
     {
-        //Set timezone
-        date_default_timezone_set("Asia/Ho_Chi_Minh");
-
-        $request->validate([
-            'hoten' => 'required',
-            'email' => 'required',
-            'soDT' => 'required',
-            'tieude' => 'required',
-            'noidung' => 'required',
-        ]);
-
         $contact = new Contact();
-        $contact->hoten = $request->hoten;
-        $contact->sdt = $request->soDT;
-        $contact->email = $request->email;
-        $contact->tieude = $request->tieude;
-        $contact->noidung = $request->noidung;
+        $contact->hoten = $request->contact_name;
+        $contact->sdt = $request->contact_sdt;
+        $contact->email = $request->contact_email;
+        $contact->tieude = $request->contact_title;
+        $contact->noidung = $request->contact_content;
         $contact->save();
 
-        return redirect()->route('home');
+        return redirect()->route('index');
     }
 
     /**
@@ -370,6 +415,9 @@ class DomainController extends Controller
             $chiTietDH->soluong = $item['quantity'];
             $chiTietDH->thanhtien = $item['price'];
             $chiTietDH->save();
+            $product = Product::find($chiTietDH->idSP);
+            $product->amount -= $chiTietDH->soluong * $product->weight;
+            $product->save();
         }
 
         $donHangInfo->hoten = $request->hoTen;
@@ -389,6 +437,9 @@ class DomainController extends Controller
             CartInfo::destroy($cartInfo->id);
         }
 
+        $data['listOrder'] = DB::table('donhang')->join('status', 'status', '=', 'status.status_id')
+            ->where('idUser', $request->session()->get('Login'))->get();
+
         return view('pages.listOrder', ['data' => $data]);
     }
 
@@ -398,7 +449,7 @@ class DomainController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $req)
+    public function show($idProduct, Request $req)
     {
         $data = $this->getData();
         $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
@@ -408,8 +459,8 @@ class DomainController extends Controller
             $favouriteProduct = [];
             foreach ($favouriteInfo as $info) {
                 $temp_product = DB::table('products')
-                ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-                ->where('id', '=', $info->idProduct)->take(1)->get();
+                    ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+                    ->where('id', '=', $info->idProduct)->take(1)->get();
                 $id = $info['idProduct'];
                 array_push($favouriteProduct, $temp_product[0]);
                 $check[$id] = $info['idProduct'];
@@ -420,19 +471,23 @@ class DomainController extends Controller
         }
 
         $product = DB::table('products')
-        ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->where('id', '=', $id)->select('*')->get();
+            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('id', '=', $idProduct)->select('*')->get();
 
         $productRelate = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->where('products_photos.photo_feature', '=', 1)
-        ->where('type_id', '=', $product[0]->type_id)->get();
-        
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', '=', 1)
+            ->where('type_id', '=', $product[0]->type_id)->get();
+
         $data['product'] = $product;
         $data['productRelate'] = $productRelate;
+        $userIMG = 'user.png';
 
-        return view('pages.shop-details', ['data' => $data]);
+        if (Auth::check() == true) {
+            $userIMG = User::where('id', auth()->user()->id)->get()[0]->image;
+        }
+        return view('pages.shop-details', compact('userIMG'), ['data' => $data]);
     }
 
     /**
@@ -484,16 +539,31 @@ class DomainController extends Controller
             ->get()->toArray();
 
         $data = $this->getData();
+        $favourite = Favourite::where('idUser', '=', $req->session()->get('Login'))->get();
+        if (count($favourite)) {
+            $favouriteInfo = FavouriteInfo::where('idFavourite', '=', $favourite[0]->id)->get();
+            $check = [];
+            $favouriteProduct = [];
+            foreach ($favouriteInfo as $info) {
+                $temp_product = DB::table('products')->join('products_photos', 'products.id', '=', 'products_photos.product_id')->where('id', '=', $info->idProduct)->take(1)->get();
+                $id = $info['idProduct'];
+                array_push($favouriteProduct, $temp_product[0]);
+                $check[$id] = $info['idProduct'];
+            }
+            $data['favourite'] = $favouriteProduct;
+            $data['check'] = $check;
+        }
         $data['product1'] = $product;
 
         return view('pages.search', ['data' => $data]);
     }
 
-    public function showDonHang(Request $req) {
+    public function showDonHang(Request $req)
+    {
         $data = $this->getData();
         $data['listOrder'] = DB::table('donhang')->join('status', 'status', '=', 'status.status_id')
-        ->where('idUser', $req->session()->get('Login'))->get();
-        
+            ->where('idUser', $req->session()->get('Login'))->get();
+
         return view('pages.listOrder', ['data' => $data]);
     }
 
@@ -505,13 +575,163 @@ class DomainController extends Controller
     {
         $data = $this->getDaTa();
         $product = DB::table('products')
-        ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
-        ->where('products_photos.photo_feature', '=', 1)
-        ->where('type_id', '=', $id)
-        ->select('*')
-        ->get();
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', '=', 1)
+            ->where('type_id', '=', $id)
+            ->select('*')
+            ->get();
         $protype = Protype::where('type_id', '=', $id)->get();
         $data['product'] = $product;
         return view('pages.classifiProduct', compact('protype'), ['data' => $data]);
+    }
+
+    // load comment with product id\
+
+    public function loadComment(Request $request)
+    {
+        $userIMG = 'user.png';
+        if (auth()->user() != null) {
+            $userIMG = User::where('id', auth()->user()->id)->get()[0]->image;
+        }
+        $product_id = $request->product_id;
+        $comments = Comment::where('idSP', $product_id)->get();
+        $ouput = '';
+        foreach ($comments as $key => $comm) {
+            $time = date("H:i:s", strtotime($comm->created_at));
+            $date = date("d/m/Y", strtotime($comm->created_at));
+
+            $ouput1 = '';
+            foreach ($comments as $commentChild) {
+                if ($commentChild->parent_id == $comm->id) {
+                    $time1 = date("H:i:s", strtotime($commentChild->created_at));
+                    $date1 = date("d/m/Y", strtotime($commentChild->created_at));
+                    if($commentChild->linkUser->role_id != 2) {
+                        $ouput1 .= '
+                
+                    <div class="row list-comment">
+                    <div class="col-lg-2"><img class="rounded-circle" src="' . url('/img/image_sql/img_users/' . $commentChild->linkUser->image . '') . '" width="80"></div>
+                    <div class="col-lg-10 content-comment">
+                        <div class="info-comment row">
+                            <div class="col-lg-6">
+                                 <p style="color: red; font-weight: bold">' . $commentChild->linkUser->name . '</p>
+                            </div>
+    
+                            <div class="col-lg-6">
+                                <ul>
+                                    <li><i class="far fa-clock"></i>' . $time1 . '</li>
+                                    <li><i class="far fa-calendar"></i>' . $date1 . '</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p id="product-comment">' . $commentChild->comment . '</p>
+                    </div>
+                </div>
+                    ';
+
+                    } else {
+                        $ouput1 .= '
+                
+                    <div class="row list-comment">
+                    <div class="col-lg-2"><img class="rounded-circle" src="' . url('/img/image_sql/img_users/' . $commentChild->linkUser->image . '') . '" width="80"></div>
+                    <div class="col-lg-10 content-comment">
+                        <div class="info-comment row">
+                            <div class="col-lg-6">
+                                 <p>' . $commentChild->linkUser->name . '</p>
+                            </div>
+    
+                            <div class="col-lg-6">
+                                <ul>
+                                    <li><i class="far fa-clock"></i>' . $time1 . '</li>
+                                    <li><i class="far fa-calendar"></i>' . $date1 . '</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p id="product-comment">' . $commentChild->comment . '</p>
+                    </div>
+                </div>
+                    ';
+                    }
+                }
+            }
+
+            if ($comm->parent_id == 0) {
+                $ouput .= '
+            
+            <div class="row list-comment">
+                <div class="col-lg-2"><img class="rounded-circle" src="' . url('/img/image_sql/img_users/' . $comm->linkUser->image . '') . '" width="80"></div>
+                <div class="col-lg-10 content-comment">
+                    <div class="info-comment row">
+                        <div class="col-lg-5">
+                             <p>' . $comm->linkUser->name . '</p>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <ul>
+                                <li><i class="far fa-clock"></i>' . $time . '</li>
+                                <li><i class="far fa-calendar"></i>' . $date . '</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p id="product-comment">' . $comm->comment . '</p>
+                    <a href="#/" id="reply" onclick="showReply(' . $comm->id . ');"><i class="fas fa-reply"></i>Trả lời</a>
+                    <form action="#">
+                        <div class="bg-light p-2 replies-' . $comm->id . '" style="display:none">
+                            <div class="d-flex flex-row align-items-start">
+                                <img class="rounded-circle" src="' . url('/img/image_sql/img_users/' . $userIMG . '') . '" width="40" id="imgUser">
+                                <textarea type="text" class="form-control ml-1 shadow-none textarea comment-content-reply-' . $comm->id . '" placeholder="Nhập bình luận..."></textarea>
+                            </div>
+                            <div class="mt-2 text-right">
+                                <button class="btn btn-success btn-sm shadow-none" onclick="getReply(' . $comm->id . ', ' . $comm->idSP.');" type="button">Gửi bình luận</button>
+                            </div>
+                        </div>
+                    </form>
+                    ' .
+                    $ouput1
+                    . '
+                </div>
+            </div>
+
+            ';
+            }
+        }
+        return $ouput;
+    }
+
+    // post comment 
+    public function createComment(Request $request)
+    {
+        return $request->session()->get('Login');
+        if (Auth::check() == true) {
+            $product_id = $request->product_id;
+            $comment_content = $request->comment_content;
+            $comment_user_id = $request->session()->get('Login');
+
+            $comment = new Comment();
+            $comment->idUser = $comment_user_id;
+            $comment->idSP = $product_id;
+            $comment->comment = $comment_content;
+            $comment->parent_id = 0;
+            $comment->save();
+            return back();
+        }
+        return view('auth.login');
+    }
+
+    public function createChildComment(Request $request)
+    {
+        if (Auth::check() == true) {
+            $product_id = $request->product_id;
+            $comment_content = $request->comment_content;
+            $comment_user_id = $request->session()->get('Login');
+
+            $comment = new Comment();
+            $comment->idUser = $comment_user_id;
+            $comment->idSP = $product_id;
+            $comment->comment = $comment_content;
+            $comment->parent_id = $request->comment_id;
+            $comment->save();
+            return back();
+        }
+        return view('auth.login');
     }
 }

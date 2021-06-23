@@ -7,7 +7,7 @@
                 <td class="si-pic"><img class="img-cart" src="{{URL::to('/')}}/img/image_sql/products/{{$item['productInfo']->filename}}" alt=""></td>
                 <td class="si-text">
                     <div class="product-selected">
-                        <p>{{number_format($item['productInfo']->price)}} VND x {{$item['quantity']}}</p>
+                        <p>{{number_format($item['productInfo']->price*(100-$item['productInfo']->sale)/100)}} VND x {{$item['quantity']}}</p>
                         <h6>{{$item['productInfo']->name}} </h6>
                     </div>
                 </td>
@@ -23,6 +23,9 @@
     <span>total:</span>
     <h5>{{number_format(Session::get("Cart")->totalPrice)}}₫</h5>
     <input hidden id="total-quantity-cart" type="number" value="{{Session::get('Cart')->totalQuantity}}">
+</div>
+<div class="select-button">
+    <a onclick="clearCart();" class="primary-btn view-card" style="cursor:pointer">XOÁ SẠCH</a>
 </div>
 @else
 <div class="select-total">

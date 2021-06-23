@@ -51,7 +51,7 @@
                             <ul>
                                 @if(isset(Session::get("Cart")->product))
                                 @foreach(Session::get("Cart")->product as $item)
-                                <li>{{$item['productInfo']->name}} <span>{{number_format($item['productInfo']->price)}} VND</span></li>
+                                <li>{{$item['productInfo']->name}} x {{$item['quantity']}} <span>{{number_format($item['productInfo']->price*(100-$item['productInfo']->sale)/100)}} VND</span></li>
                                 @endforeach
                                 @endif
                             </ul>

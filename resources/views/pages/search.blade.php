@@ -18,9 +18,27 @@
                     <div class="product__discount__percent">-{{$value->sale}}%</div>
                     @endif
                     <ul class="product__item__pic__hover">
-                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                        <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                        <li><a onclick="AddCart(<?= $value->id ?>)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                    <?php $temp = false; ?>
+                            @if(Session::get('Login') != null)
+                            @foreach($data['check'] as $check)
+                            @if($check == $value->id)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:" style="background-color: #7fad39;"><i class="fa fa-heart"></i></a></li>
+                            <?php $temp = true; ?>
+                            @break;
+                            @endif
+                            @endforeach
+                            @if($temp == false)
+                            <li><a id="favourite<?= $value->id ?>" onclick="AddFavourite(<?= $value->id ?>)" href="javascript:"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-heart"></i></a></li>
+                            @endif
+                            <li><a href="javascript:"><i class="fa fa-retweet"></i></a></li>
+                            @if(Session::get('Login') != null)
+                            <li><a onclick="AddCart(<?= $value->id ?>,1)" href="javascript:"><i class="fa fa-shopping-cart"></i></a></li>
+                            @else
+                            <li><a href="{{url('login')}}"><i class="fa fa-shopping-cart"></i></a></li>
+                            @endif
                     </ul>
                 </div>
                 <div class="product__item__text">

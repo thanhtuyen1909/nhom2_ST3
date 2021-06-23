@@ -38,7 +38,7 @@
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
                   <label for="created_at">Ngày nhập
                   </label>
-                  <input readonly id="created_at" name="created_at" type="text" value="<?= now() ?>" class="form-control validate" data-large-mode="true" />
+                  <input readonly id="created_at" name="created_at" style="background-color: #54657d;" type="text" value="<?php date_default_timezone_set("Asia/Ho_Chi_Minh"); echo date('Y-m-d H:i:s'); ?>" class="form-control validate" data-large-mode="true" />
                 </div>
                 <div class="form-group mb-3 col-xs-12 col-sm-6">
                   <label for="weight">Cân nặng
@@ -76,7 +76,7 @@
             </div>
             <div class="col-xl-6 col-lg-6 col-md-12 mx-auto mb-4">
               <div class="tm-product-img-edit mx-auto">
-                <img id="imgUpload" src="" alt="Product image" class="img-fluid d-block mx-auto">
+                <img id="imgUpload" src="{{URL::to('/')}}/img/default-product.png" alt="Product image" class="img-fluid d-block mx-auto">
               </div>
               <div class="tm-product-img-edit mx-auto">
                 <div class="imgPreview"> </div>
