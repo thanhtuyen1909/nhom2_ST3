@@ -24,7 +24,6 @@ Route::group(['middleware' => ['admin']], function () {
     //
     Route::get('/admin/logout', 'AdminController@logout');
     Route::group(['middleware' => ['super']], function () {
-      
        
         // Banner
         Route::get('/admin/deleteBanner/{id}', 'BannerController@destroy');
@@ -63,7 +62,6 @@ Route::group(['middleware' => ['admin']], function () {
 
     //Comment
     Route::post('/admin/reply-comment', 'AdminController@reply_comment');
-
 
     //Contact
     Route::get('/admin/listContact', 'AdminController@showListContact');

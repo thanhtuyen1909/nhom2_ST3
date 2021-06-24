@@ -219,6 +219,7 @@ class AdminController extends Controller
         $user = DB::table('users')->get();
         return view('admin.pages.listComment', ['data' => $data])->with(compact('user'));
     }
+    
     function download($id){
         $donHang = DonHang::find($id);
         $detail = ChiTietDonHang::where('idDonHang',$id)->get();
@@ -231,7 +232,8 @@ class AdminController extends Controller
         $time = $time->toDateString();
         $time = explode("-", $time);
         $pdf = app('dompdf.wrapper');
-        $pdf->loadView('admin.layoutHD', ['data' => $data,'id'=>$id,'time'=>$time])->setOptions(['defaultFont' => 'times-roman']);
+        $pdf->loadView('admin.layoutHD', ['data' => $data,'id'=>$id,'time'=>$time])
+        ->setOptions(['defaultFont' => 'times-roman']);
         return $pdf->download("id.pdf");
     }
     
