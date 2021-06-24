@@ -123,7 +123,7 @@
                     <h4>Danh sách sản phẩm</h4>
                 </div>
                 <div class="row">
-                    @foreach($data['product'] as $value)
+                    @foreach($data['productA'] as $value)
                     <div class="col-lg-4 col-md-6 col-sm-6">
                         <div class="product__item">
                             <div class="product__item__pic set-bg" data-setbg="img/image_sql/products/<?= $value->filename ?>">
@@ -166,11 +166,8 @@
                     </div>
                     @endforeach
                 </div>
-                <div class="product__pagination">
-                    <a href="#">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#"><i class="fa fa-long-arrow-right"></i></a>
+                <div class="col-lg-12">
+                    {{$data['productA']->links()}}
                 </div>
             </div>
         </div>

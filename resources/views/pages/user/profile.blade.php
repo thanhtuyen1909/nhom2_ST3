@@ -5,7 +5,7 @@
         <div class="col-lg-7">
             <div class="card-body border">
                 <h3 class="profile-tittle">THÔNG TIN TÀI KHOẢN</h3>
-                <form method="post" action="{{route('user.profile.update',$profile->id)}}">
+                <form method="post" action="{{route('user.profile.update',$profile->id)}}" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-md-4">

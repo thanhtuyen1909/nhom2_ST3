@@ -35,7 +35,8 @@ class OrderController extends Controller {
                 $dataArrayCTDH['nameSP'] = $or->linkProduct->name;
                 $dataArrayCTDH['price'] = $or->thanhtien;
                 $dataArrayCTDH['amount'] = $or->soluong;
-                $dataArrayCTDH['photo'] = ProductsPhotos::where([['product_id', $or->linkProduct->id], ['photo_feature', 1]])->first()->filename;
+                $dataArrayCTDH['photo'] = ProductsPhotos::where([['product_id', $or->linkProduct->id], ['photo_feature', 1]])
+                ->first()->filename;
                 $dataArrayCTDH1[] = $dataArrayCTDH;
             }
         }
@@ -55,6 +56,7 @@ class OrderController extends Controller {
         
         return view('admin.pages.order-detail', compact('dataArray1', 'dataArrayCTDH1'))->with('id', $id);
     }
+    
     function changeStatus($id,$value){
 
         $data['DonHang'] = DB::table('DonHang')->get();

@@ -94,9 +94,6 @@ class AdminController extends Controller
         $data['comment'] = Comment::orderBy('created_at', 'desc')->get();
 
         $data['name'] = "";
-        if (auth()->user() != null) {
-            $data['name'] = auth()->user()->name;
-        }
 
         return $data;
     }
@@ -132,9 +129,9 @@ class AdminController extends Controller
         return view('admin.pages.login');
     }
 
-    public function indexAdmin($name)
+    public function indexAdmin($name, Request $request)
     {
-
+        $user = User::where('id', $request->session()->get('userAdmin')->id)->first();
         $data = $this->getDaTaAdmin();
         $data['DonHang'] = DB::table('DonHang')->get();
         $dataArray1 = [];
@@ -149,7 +146,7 @@ class AdminController extends Controller
         if ($name == "reply-comment" || $name == "deleteComment") {
             return;
         }
-        return view('admin.pages.' . $name, compact('dataArray1'), ['data' => $data]);
+        return view('admin.pages.' . $name, compact('dataArray1', 'user'), ['data' => $data]);
     }
 
     public function showAdmin()
@@ -237,6 +234,7 @@ class AdminController extends Controller
         $pdf->loadView('admin.layoutHD', ['data' => $data,'id'=>$id,'time'=>$time])->setOptions(['defaultFont' => 'times-roman']);
         return $pdf->download("id.pdf");
     }
+    
     function view($id){
         $donHang = DonHang::find($id);
         $detail = ChiTietDonHang::where('idDonHang',$id)->get();

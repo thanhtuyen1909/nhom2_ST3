@@ -85,7 +85,7 @@ class DomainController extends Controller
             $item->save();
         }
     }
-    
+
     public function getData()
     {
         $this->autoSale();
@@ -99,12 +99,21 @@ class DomainController extends Controller
             ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
             ->where('products_photos.photo_feature', 1)
             ->get();
+
+        $productA = DB::table('products')
+            ->join('protypes', 'products.type_id', '=', 'protypes.type_id')
+            ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
+            ->where('products_photos.photo_feature', 1)
+            ->paginate(6);
+
         $protype = DB::table('protypes')->get();
+
         $productLastList1 = DB::table('products')
             ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
             ->orderby('products.id', 'desc')
             ->limit(3)
             ->get();
+            
         $productLastList2 = DB::table('products')
             ->join('products_photos', 'products.id', '=', 'products_photos.product_id')
             ->orderby('products.id', 'desc')
@@ -116,6 +125,8 @@ class DomainController extends Controller
 
         $data = [];
         $data['product'] = $product;
+
+        $data['productA'] = $productA;
 
         $data['product1'] = $product1;
 
@@ -130,8 +141,7 @@ class DomainController extends Controller
 
     public function getLogin()
     {
-        if(!session()->has('url.intended'))
-        {
+        if (!session()->has('url.intended')) {
             session(['url.intended' => url()->previous()]);
         }
         return view('auth.login');
@@ -284,7 +294,7 @@ class DomainController extends Controller
             $data['check'] = $check;
         }
 
-        return view('.pages/shop-grid', ['data' => $data]);
+        return view('.pages/shop-grid', ['data' => $data],);
     }
 
     // order-details
@@ -605,7 +615,7 @@ class DomainController extends Controller
                 if ($commentChild->parent_id == $comm->id) {
                     $time1 = date("H:i:s", strtotime($commentChild->created_at));
                     $date1 = date("d/m/Y", strtotime($commentChild->created_at));
-                    if($commentChild->linkUser->role_id != 2) {
+                    if ($commentChild->linkUser->role_id != 2) {
                         $ouput1 .= '
                 
                     <div class="row list-comment">
@@ -627,7 +637,6 @@ class DomainController extends Controller
                     </div>
                 </div>
                     ';
-
                     } else {
                         $ouput1 .= '
                 
@@ -681,7 +690,7 @@ class DomainController extends Controller
                                 <textarea type="text" class="form-control ml-1 shadow-none textarea comment-content-reply-' . $comm->id . '" placeholder="Nhập bình luận..."></textarea>
                             </div>
                             <div class="mt-2 text-right">
-                                <button class="btn btn-success btn-sm shadow-none" onclick="getReply(' . $comm->id . ', ' . $comm->idSP.');" type="button">Gửi bình luận</button>
+                                <button class="btn btn-success btn-sm shadow-none" onclick="getReply(' . $comm->id . ', ' . $comm->idSP . ');" type="button">Gửi bình luận</button>
                             </div>
                         </div>
                     </form>
@@ -700,7 +709,6 @@ class DomainController extends Controller
     // post comment 
     public function createComment(Request $request)
     {
-        return $request->session()->get('Login');
         if (Auth::check() == true) {
             $product_id = $request->product_id;
             $comment_content = $request->comment_content;

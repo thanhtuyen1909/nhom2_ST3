@@ -44,11 +44,20 @@ class UserController extends Controller
 
     public function profileUpdate(Request $request, $id)
     {
-        // return $request->all();
         $user = User::findOrFail($id);
-        $data = $request->all();
-        $user->fill($data);
-        $user['name'] = $request->name;
+        $user->name = $request->name;
+
+        $request->validate([
+            'fileInput' => 'mimes:jpeg,jpg,png|max:100000',
+        ]);
+
+        if ($request->hasFile('fileInput')) {
+            $user->image = $request->fileInput->getClientOriginalName();
+            $image = $request->file('fileInput');
+            $destinationPathImg = 'img/image_sql/img_users';
+
+            $image->move($destinationPathImg, $image->getClientOriginalName());
+        }
 
         $status = $user->save();
         if ($status) {
@@ -139,9 +148,31 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request)
     {
-        //
+        $user = User::where('email', $request->email)->first();
+        $user->name = $request->name;
+
+        $request->validate([
+            'fileInput' => 'mimes:jpeg,jpg,png|max:100000',
+        ]);
+
+        // lưu profile
+        if ($request->hasFile('fileInput')) {
+            $user->image = $request->fileInput->getClientOriginalName();
+            $image = $request->file('fileInput');
+            $destinationPathImg = 'img/image_sql/img_users';
+
+            $image->move($destinationPathImg, $image->getClientOriginalName());
+        }
+
+        $status = $user->save();
+        if ($status) {
+            request()->session()->flash('success', 'Cập nhật tài thông tin tài khoản thành công!');
+        } else {
+            request()->session()->flash('error', 'Vui lòng thử lại!');
+        }
+        return redirect('admin/account');
     }
 
     /**
@@ -151,8 +182,45 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+
+
+    public function showAccount($id)
     {
+        return view('admin.pages.edit-account')->with('id', $id);
+    }
+
+    public function showChangPage($email)
+    {
+        return view('admin.pages.changePass')->with('email', $email);
+    }
+
+    public function changePass(Request $request, $email)
+    {
+        $user = User::where('email', $email)->first();
+        if(password_verify($request->currentpassword,$user->password)==true){
+            if($request->newpassword == $request->comfirmpassword){
+                $user->password = Hash::make($request->newpassword);
+                $user->save();
+                return redirect('admin/account');
+            }else{
+                session()->flash('danger', 'Không trùng khớp mật khẩu và xác nhận mật khẩu!');
+                return redirect()->back();
+            }
+        }
+        else{
+            session()->flash('danger', 'Không trùng khớp mật khẩu hiện tại!');
+        }
+
+        return redirect()->back();
+    }
+
+    public function updateAccount(Request $request, $id)
+    {
+        $user = User::where('id', $id)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+        session()->flash('success', 'Cập nhật thông tin tài khoản thành công!');
+        return redirect('admin/accountManage');
     }
 
     /**

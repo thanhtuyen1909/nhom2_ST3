@@ -36,6 +36,11 @@ Route::group(['middleware' => ['admin']], function () {
 
         // Account
         Route::post('/admin/add-account', 'UserController@store');
+        Route::get('/admin/edit-account/{id}', 'UserController@showAccount');
+        Route::post('/admin/edit-account/{id}', 'UserController@updateAccount');
+        Route::get('/admin/changePass/{email}', 'UserController@showChangPage');
+        Route::post('/admin/changePass/{email}', 'UserController@changePass');
+        Route::post('/admin/editProfile', 'UserController@edit');
 
         // Product
         Route::post('/admin/upload/{id}', 'ProductController@update');

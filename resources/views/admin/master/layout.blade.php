@@ -166,9 +166,8 @@
         })
 
         $("#account-body").on("click", "tr .tm-product-name", function() {
-            // let a = $(this).data("id")
-            // window.location.href = "{{url('/admin/edit-product/')}}" + "/" + a;
-            window.location.href = "{{url('/admin/edit-account/')}}";
+            let a = $(this).data("id")
+            window.location.href = "{{url('/admin/edit-account/')}}" + "/" + a;
         })
 
         $("#protype-body").on("click", ".tm-product-name", function() {
@@ -180,6 +179,19 @@
             let a = $(this).data("id")
             window.location.href = "{{url('/admin/order-detail/')}}" + "/" + a;
         })
+
+        function goChangePage() {
+            let email = $('#email').val();
+            window.location = "{{url('/admin/changePass')}}" + "/" + email;
+            // $.ajax({
+            //     url: "{{url('/admin/changePass')}}",
+            //     method: "POST",
+            //     data: {
+            //         email: email,
+            //         _token: "{{ csrf_token() }}",
+            //     }
+            // });
+        }
 
         $(function() {
             // Multiple images preview with JavaScript
@@ -462,7 +474,7 @@
                                     success: function(data) {
                                         $("#comment-body").empty();
                                         $("#comment-body").html(data);
-                                        
+
                                     }
                                 });
                             }
@@ -477,11 +489,13 @@
                 }
             });
         }
-        function download(){
+
+        function download() {
             let url = window.location.href;
             let id = url.slice(url.lastIndexOf('/') + 1);
-            window.location = "{{URL::to('/')}}/admin/download/"+id;
+            window.location = "{{URL::to('/')}}/admin/download/" + id;
         }
+
         function roleChange() {
             var id = $('#select_id').val();
             $.ajax({

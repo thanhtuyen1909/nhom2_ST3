@@ -177,6 +177,9 @@
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="product__item">
                     <div class="product__item__pic set-bg" data-setbg="../img/image_sql/products/<?= $item->filename ?>">
+                        @if($item->sale > 0)
+                        <div class="product__discount__percent">-{{$item->sale}}%</div>
+                        @endif
                         <ul class="product__item__pic__hover">
                             <?php $temp = false; ?>
                             @if(Session::get('Login') != null)
@@ -206,7 +209,11 @@
                     </div>
                     <div class="product__item__text">
                         <h6><a href="./<?= $item->id ?>">{{$item->name}}</a></h6>
-                        <h5>{{number_format($item->price)}} VND</h5>
+                        @if($item->sale > 0)
+                        <div class="product__item__price product__details__price">{{number_format($item->price*(100-$item->sale)/100)}} VND <span>{{number_format($item->price)}} VND</span></div>
+                        @else
+                        <div class="product__item__price product__item__price">{{number_format($item->price*(100-$item->sale)/100)}} VND</div>
+                        @endif
                     </div>
                 </div>
             </div>
